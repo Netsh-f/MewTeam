@@ -10,5 +10,5 @@ from user.views import register
 
 urlpatterns = [
     path('register', register.register, name='register'),
-
+    path('login', register.login)
 ]
