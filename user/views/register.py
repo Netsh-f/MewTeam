@@ -3,6 +3,8 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from shared.error import Error
+from shared.res_temp import ResponseTemplate
+from shared import token
 from user.models import User
 
 '''
@@ -29,39 +31,42 @@ def register(request):
         data = request.data
         nickname = data['nickname']
         email = data['email']
-        phonenum = data['phonenum']
+        name = data['name']
 
-        if User.objects.filter(nickname=nickname).exists():
-            message = '昵称已被注册'
-            return ResponseTemple
-        if User.objects.filter(email=email).exists():
-            message = '邮箱已被注册'
-            return Response({'errno': Error.EMAIL_EXISTS, 'msg': message}, status=status.HTTP_200_OK)
+        if User.objects.filter(nickname=nickname):
+            return ResponseTemplate(Error.NICKNAME_EXISTS, '昵称已被注册')
+        if User.objects.filter(email=email):
+            return ResponseTemplate(Error.EMAIL_EXISTS, '邮箱已被注册')
+        if User.objects.filter(email=email):
+            return ResponseTemplate(Error.NAME_EXISTS, '真实姓名已被注册')
 
-        user = User.objects.create(nickname=nickname, email=email, password=data['password'])
-        message = '用户注册成功！'
-        return Response({'errno':Error.SUCCESS, 'msg': message}, status=status.HTTP_201_CREATED)
+        user = User.objects.create(nickname=nickname, email=email, name=name, password=data['password'])
+        return ResponseTemplate(Error.SUCCESS, '用户注册成功！', status=status.HTTP_201_CREATED)
     except KeyError as keyError:
-        message = '请求结构体非法'
-        return Response({'errno':Error.FAILED, 'msg': message}, status=status.HTTP_400_BAD_REQUEST)
+        return ResponseTemplate(Error.FAILED, '请求结构体非法', status=status.HTTP_400_BAD_REQUEST)
     except Exception as exception:
-        message = '服务器异常'
-        # print(exception)
-        return Response({'errno': Error.FAILED, 'msg': message}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return ResponseTemplate(Error.FAILED, '服务器异常', status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 @api_view(['POST'])
 def login(request):
     '''
-
+    请求参数：email, password
+    响应参数: token
     '''
     try:
         data = request.data
         email = data['email']
-        message = ''
+        password = data['password']
 
-        if not User.objects.filter(email=email).exists():
-            message = '用户不存在'
-            return Response({'errno':Error.USER_NOT_EXISTS, 'msg': message}, )
+        if not User.objects.filter(email=email):
+            return ResponseTemplate(Error.EMAIL_NOT_FOUND, '用户不存在')
+
+        user = User.objects.get(email=email)
+        if user.password != password:
+            return ResponseTemplate(Error.PASSWORD_NOT_CORRECT, '密码错误')
+
+        return ResponseTemplate(Error.SUCCESS, '登陆成功！', {'id': token.generate_token(user.id)} )
     except KeyError as keyError:
-        pass
-
+        return ResponseTemplate(Error.FAILED, '请求结构体非法', status=status.HTTP_400_BAD_REQUEST)
+    except Exception as exception:
+        return ResponseTemplate(Error.FAILED, '服务器异常', status=status.HTTP_500_INTERNAL_SERVER_ERROR)
