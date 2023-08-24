@@ -6,6 +6,9 @@
 #
 from django.urls import path
 
+from user.views import register
+
 urlpatterns = [
-    path('register', )
+    path('register', register.register, name='register'),
+
 ]

@@ -4,9 +4,10 @@ from rest_framework import status
 
 @api_view(['POST'])
 def register(request):
-    params = request.data
-    email = params['email']
-    message = ''
-    if not email:
-        message = 'email not found'
-        return Response({'msg':message}, status=status.HTTP_400_BAD_REQUEST)
+    # params = request.data
+    # email = params['email']
+    # message = ''
+    # if not email:
+    #     message = 'email not found'
+    #     return Response({'msg':message}, status=status.HTTP_400_BAD_REQUEST)
+    return Response({'msg': "test interface"}, status=status.HTTP_200_OK)
