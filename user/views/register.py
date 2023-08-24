@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from shared.error import Error
+from shared.res_temp import ResponseTemplate
 from user.models import User
 
 '''
@@ -57,11 +58,11 @@ def login(request):
     try:
         data = request.data
         email = data['email']
-        message = ''
+        password = data['password']
+        user = User.objects.filter(email=email)
 
-        if not User.objects.filter(email=email).exists():
-            message = '用户不存在'
-            return Response({'errno':Error.USER_NOT_EXISTS, 'msg': message}, )
+    except User.DoesNotExist:
+        return ResponseTemplate(Error.USER_NOT_EXISTS, 'user is not exist')
     except KeyError as keyError:
         pass
 

@@ -9,7 +9,7 @@ from rest_framework.response import Response
 
 
 class ResponseDictTemplate(dict):
-    def __init__(self, errno: int, msg: str, data: dict = None):
+    def __init__(self, errno: int, msg: str, data=None):
         response_data = {'errno': errno, 'msg': msg}
         if data:
             response_data['data'] = data
@@ -17,5 +17,5 @@ class ResponseDictTemplate(dict):
 
 
 class ResponseTemplate(Response):
-    def __init__(self, errno: int, msg: str, data: dict = None, http_status: int = status.HTTP_200_OK):
+    def __init__(self, errno: int, msg: str, data=None, http_status: int = status.HTTP_200_OK):
         super().__init__(ResponseDictTemplate(errno, msg, data), status=http_status)
