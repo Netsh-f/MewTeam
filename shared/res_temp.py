@@ -19,6 +19,3 @@ class ResponseDictTemplate(dict):
 class ResponseTemplate(Response):
     def __init__(self, errno: int, msg: str, data: dict = None, http_status: int = status.HTTP_200_OK):
         super().__init__(ResponseDictTemplate(errno, msg, data), status=http_status)
-
-def test():
-    pass
