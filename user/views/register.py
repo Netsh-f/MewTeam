@@ -34,9 +34,16 @@ def register(request):
             message = '邮箱已被注册'
             return Response({'errno': Error.EMAIL_NOT_FOUND, 'msg': message}, status=status.HTTP_200_OK)
 
-        user = User.objects.create(nickname=nickname, password=data['password'], email=data['email'])
+        user = User.objects.create(nickname=nickname, email=email, password=data['password'])
         message = '用户注册成功！'
         return Response({'errno':Error.SUCCESS, 'msg': message}, status=status.HTTP_201_CREATED)
-    except Exception as e:
+    except KeyError as e:
         message = '请求结构体非法'
         return Response({'errno':Error.FAILED, 'msg': message}, status=status.HTTP_400_BAD_REQUEST)
+    except Exception as e:
+        message = '服务器异常'
+        return Response({'errno': Error.FAILED, 'msg': message}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(['POST'])
+def login(request):
+    pass
