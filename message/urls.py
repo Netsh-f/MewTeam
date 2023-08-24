@@ -4,7 +4,10 @@
 # @Author  : Lynx
 # @File    : urls.py
 #
-urlpatterns = [
 
+from django.urls import path
+from message import views
+
+urlpatterns = [
 ]
 
