@@ -26,11 +26,13 @@ SECRET_KEY = "django-insecure-(5mqw33-@znu^p5wr$#ipgex=yx0s&2xrob287dbksrpllb3h^
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 with open("secrets.yaml", 'r') as f:
     SECRETS = yaml.safe_load(f)
-
+with open("config.yaml", 'r') as f:
+    CONFIG = yaml.safe_load(f)
+ERROR_CODE = CONFIG['ERROR_CODE']
 
 # Application definition
 
@@ -41,9 +43,13 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "user",
+    'corsheaders',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -123,3 +129,10 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+
+################################################################################
+# CORS - Headers
+#
+
+CORS_ORIGIN_ALLOW_ALL = True
