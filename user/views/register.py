@@ -27,6 +27,7 @@ def register(request):
     '''
     try:
         data = request.data
+        message = ''
         nickname = data['nickname']
         email = data['email']
 
@@ -36,7 +37,7 @@ def register(request):
 
         if User.objects.filter(email=email).exists():
             message = '邮箱已被注册'
-            return Response({'errno': Error.EMAIL_NOT_FOUND, 'msg': message}, status=status.HTTP_200_OK)
+            return Response({'errno': Error.EMAIL_EXISTS, 'msg': message}, status=status.HTTP_200_OK)
 
         user = User.objects.create(nickname=nickname, email=email, password=data['password'])
         message = '用户注册成功！'
@@ -56,6 +57,12 @@ def login(request):
     '''
     try:
         data = request.data
+        email = data['email']
+        message = ''
+
+        if not User.objects.filter(email=email).exists():
+            message = '用户不存在'
+            return Response({'errno':Error.USER_NOT_EXISTS, 'msg': message}, )
     except KeyError as keyError:
         pass
 

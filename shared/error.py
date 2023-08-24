@@ -15,6 +15,8 @@ class Error:
     USER_EXISTS = 10001
     EMAIL_EXISTS = 10002
     EMAIL_NOT_FOUND = 10003
+    USER_NOT_EXISTS = 10004
+
 
     # message modules
 
