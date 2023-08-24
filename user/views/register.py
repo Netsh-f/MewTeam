@@ -27,14 +27,13 @@ def register(request):
     '''
     try:
         data = request.data
-        message = ''
         nickname = data['nickname']
         email = data['email']
-
+        phonenum = data['phonenum']
 
         if User.objects.filter(nickname=nickname).exists():
             message = '昵称已被注册'
-            return
+            return ResponseTemple
         if User.objects.filter(email=email).exists():
             message = '邮箱已被注册'
             return Response({'errno': Error.EMAIL_EXISTS, 'msg': message}, status=status.HTTP_200_OK)

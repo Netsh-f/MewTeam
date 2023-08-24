@@ -16,6 +16,7 @@ if confirmation.lower() == "y":
     os.system(f"git merge {branchName}")
     os.system("git push")
     os.system(f"git checkout {branchName}")
+    os.system("git merge dev")
 
 else:
     print("操作已取消。")
