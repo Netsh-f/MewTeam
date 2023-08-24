@@ -4,10 +4,18 @@
 # @Author  : Lynx
 # @File    : res_temp.py
 #
+from rest_framework import status
+from rest_framework.response import Response
 
-class ResponseTemplate:
-    def resTemp(self, errno: int, msg: str, data: dict = None) -> json:
+
+class ResponseDictTemplate(dict):
+    def __init__(self, errno: int, msg: str, data: dict = None):
+        response_data = {'errno': errno, 'msg': msg}
         if data:
-            return {'errno': errno, 'msg': msg, 'data': data}
-        else:
-            return {'errno': errno, 'msg': msg}
+            response_data['data'] = data
+        super().__init__(response_data)
+
+
+class ResponseTemplate(Response):
+    def __init__(self, errno: int, msg: str, data: dict = None, http_status: int = status.HTTP_200_OK):
+        super().__init__(ResponseDictTemplate(errno, msg, data), status=http_status)

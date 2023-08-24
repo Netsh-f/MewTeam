@@ -16,6 +16,7 @@ class Error:
     EMAIL_EXISTS = 10002
     EMAIL_NOT_FOUND = 10003
     USER_NOT_EXISTS = 10004
+    TOKEN_INVALID = 10005
 
 
     # message modules
