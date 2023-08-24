@@ -15,6 +15,8 @@ from django.contrib.auth.hashers import make_password, check_password
 from django.core import signing
 
 from MewTeam import settings
+from shared.error import Error
+from shared.res_temp import ResponseTemplate
 
 HEADER = {'type': 'JWT', 'alg': 'default'}
 KEY = settings.SECRETS['signing']['key']
@@ -109,3 +111,10 @@ def generate_password(password) -> str:
 
 def verify_password(password, token) -> bool:
     return check_password(password, token)
+
+
+def check_token(request):
+    token = request.META.get('HTTP_AUTHORIZATION', '')
+    if not verify_token(token):
+        return ResponseTemplate(Error.TOKEN_INVALID, "token is invalid"), -1
+    return None, get_identity_from_token(token)

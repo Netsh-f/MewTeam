@@ -20,13 +20,12 @@ class Error:
     TOKEN_INVALID = 10006
     PASSWORD_NOT_CORRECT = 10007
 
-
     # message modules
 
-
     # team modules
-
+    PERMISSION_DENIED = 30001
+    IDENTIFY_ERROR = 30002
 
     # project modules
-
-
+    DATABASE_INTERNAL_ERROR = 40001
+    DATA_NOT_FOUND = 40002
