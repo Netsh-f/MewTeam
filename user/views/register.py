@@ -31,6 +31,7 @@ def register(request):
         nickname = data['nickname']
         email = data['email']
 
+
         if User.objects.filter(nickname=nickname).exists():
             message = '昵称已被注册'
             return Response({'errno': Error.USER_EXISTS, 'msg': message}, status=status.HTTP_200_OK)
