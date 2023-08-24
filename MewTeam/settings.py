@@ -9,7 +9,8 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
-
+import secrets
+import string
 from pathlib import Path
 import yaml
 
@@ -87,23 +88,21 @@ WSGI_APPLICATION = "MewTeam.wsgi.application"
 # 设置ASGI应用
 ASGI_APPLICATION = "MewTeam.asgi.application"
 
-# 设置通道层的通信后台 - 本地测试用
-CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels.layers.InMemoryChannelLayer"
-    }
-}
-
-# # 生产环境中使用redis做后台，安装channels_redis
+# # 设置通道层的通信后台 - 本地测试用
 # CHANNEL_LAYERS = {
 #     "default": {
-#         "BACKEND": "channels_redis.core.RedisChannelLayer",
-#         "CONFIG": {
-#             "hosts": [("127.0.0.1", 6379)],
-#             # 或"hosts": [os.environ.get('REDIS_URL', 'redis://127.0.0.1:6379/1')],
-#         },
-#     },
+#         "BACKEND": "channels.layers.InMemoryChannelLayer"
+#     }
 # }
+# redis 生产环境
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
+        },
+    },
+}
 
 
 # Database
