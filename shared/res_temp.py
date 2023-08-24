@@ -6,7 +6,7 @@
 #
 
 class ResponseTemplate:
-    def resTemp(self, errno: int, msg: str, data: dict = None) -> json:
+    def resTemp(self, errno: int, msg: str, data: dict = None):
         if data:
             return {'errno': errno, 'msg': msg, 'data': data}
         else:

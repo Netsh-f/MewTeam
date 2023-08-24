@@ -4,6 +4,7 @@ from rest_framework import status
 
 from shared.error import Error
 from user.models import User
+from shared.res_temp import ResponseTemplate
 
 '''
 前端更加提倡以不同的HTTP状态码标明错误的种类
@@ -34,7 +35,7 @@ def register(request):
 
         if User.objects.filter(nickname=nickname).exists():
             message = '昵称已被注册'
-            return Response({'errno': Error.USER_EXISTS, 'msg': message}, status=status.HTTP_200_OK)
+            return Response(ResponseTemplate.resTemp(Error.USER_EXISTS, message), status=status.HTTP_200_OK)
 
         if User.objects.filter(email=email).exists():
             message = '邮箱已被注册'
