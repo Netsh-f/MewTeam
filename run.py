@@ -2,7 +2,7 @@
 #
 # @Time    : 2023/8/24 17:10
 # @Author  : Lynx
-# @File    : start_script.py
+# @File    : run.py
 #
 
 import os

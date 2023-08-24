@@ -21,13 +21,17 @@ Response template:
 
 @api_view(['POST'])
 def register(request):
+    '''
+    请求三个属性：用户昵称，用户邮箱，用户密码
+    后端进行的判定有：昵称重复性检测，邮箱重复性检测
+    '''
     try:
         data = request.data
         nickname = data['nickname']
         email = data['email']
 
         if User.objects.filter(nickname=nickname).exists():
-            message = '用户名已存在'
+            message = '昵称已被注册'
             return Response({'errno': Error.USER_EXISTS, 'msg': message}, status=status.HTTP_200_OK)
 
         if User.objects.filter(email=email).exists():
@@ -37,13 +41,21 @@ def register(request):
         user = User.objects.create(nickname=nickname, email=email, password=data['password'])
         message = '用户注册成功！'
         return Response({'errno':Error.SUCCESS, 'msg': message}, status=status.HTTP_201_CREATED)
-    except KeyError as e:
+    except KeyError as keyError:
         message = '请求结构体非法'
         return Response({'errno':Error.FAILED, 'msg': message}, status=status.HTTP_400_BAD_REQUEST)
-    except Exception as e:
+    except Exception as exception:
         message = '服务器异常'
+        # print(exception)
         return Response({'errno': Error.FAILED, 'msg': message}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 @api_view(['POST'])
 def login(request):
-    pass
+    '''
+
+    '''
+    try:
+        data = request.data
+    except KeyError as keyError:
+        pass
+
