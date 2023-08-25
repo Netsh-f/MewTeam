@@ -7,8 +7,13 @@
 
 import os
 
-branch_name = input("请输入个人开发分支名：")
+branch_name = input("请输入个人开发分支名：[ (a)lynx / (b)Elaikona-feature ]")
 confirmation = input("请确认位于个人开发分支并已将所有更改提交！[y/n]: ")
+
+if branch_name.lower() == 'a':
+    branch_name = 'lynx'
+elif branch_name.lower() == 'b':
+    branch_name = 'Elaikona-feature'
 
 if confirmation.lower() == "y":
     os.system("git checkout dev")
