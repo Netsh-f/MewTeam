@@ -29,6 +29,8 @@ class Error:
     INVALID_INVITATION_CODE = 30004
 
     # project modules
+
+
     DATABASE_INTERNAL_ERROR = 40001
     DATA_NOT_FOUND = 40002
 
