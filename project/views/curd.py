@@ -4,6 +4,9 @@
 # @Author  : Lynx
 # @File    : curd.py
 #
+from datetime import timedelta, datetime
+
+from django.db.models import Q
 from rest_framework.decorators import api_view
 
 from project.models import Project
@@ -61,6 +64,7 @@ def delete_project(request, team_id, pro_id):
     if project == None:
         return ResponseTemplate(Error.PRO_NOT_FOUND, '项目不存在')
     project.is_deleted = True
+    project.delete_time = datetime.now()
     project.save()
     return ResponseTemplate(Error.SUCCESS, '删除成功！')
 
@@ -81,5 +85,18 @@ def recover_project(request, team_id, pro_id):
 
 
 @api_view(['GET'])
-def list_project(request, team_id, pro_id):
-    pass
+def list_project(request, team_id):
+    response, user_id = check_token(request)
+    if user_id == -1:
+        return response
+    if not _is_legal_identity(user_id, team_id):
+        return ResponseTemplate(Error.ILLEGAL_IDENTITY, '非法恢复，请检查您的用户状态和团队信息')
+
+    thirty_days_ago = datetime.now() - timedelta(days=30)
+    Project.objects.filter(is_deleted=True, delete_time__gt=thirty_days_ago).delete()
+
+    project_list = []
+    for project in Project.objects.all():
+        project_list.append(ProjectSerializer(project).data)
+
+    return ResponseTemplate(Error.SUCCESS, '项目列表获取成功!', data=project_list)
