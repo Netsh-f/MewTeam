@@ -18,4 +18,4 @@ class Message(models.Model):
     mtype = models.PositiveSmallIntegerField(choices=MessageType.choices, default=MessageType.TEXT)
     checked = models.BooleanField(default=False)
     text = models.TextField()
-    file_path = models.CharField(max_length=127)
+    file_path = models.FileField(upload_to='res/msg/')
