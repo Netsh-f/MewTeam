@@ -14,7 +14,7 @@ class Message(models.Model):
     sender_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sent_messages')
     receiver_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='received_messages')  # 群聊时为空
     team = models.ForeignKey(Team, on_delete=models.CASCADE)  # 私聊时为空
-    timestamp = models.DateTimeField(default=timezone.now())
+    timestamp = models.DateTimeField(default=timezone.now)
     mtype = models.PositiveSmallIntegerField(choices=MessageType.choices, default=MessageType.TEXT)
     checked = models.BooleanField(default=False)
     text = models.TextField()
