@@ -9,6 +9,7 @@ from shared.token import check_token
 from team.models import UserTeamShip, Team
 from shared.permission import is_admin_or_creator, is_normal, is_admin
 from team.serializers import UserTeamShipSerializer, TeamSerializer
+from user.serializers import UserSerializer
 
 logger = logging.getLogger(__name__)
 
@@ -25,10 +26,15 @@ def get_team_user_list(request, team_id):
             return ResponseTemplate(Error.PERMISSION_DENIED, "You are not a member of this team")
 
         user_team_ships = UserTeamShip.objects.filter(team_id=team_id)
+        users_data = []
+        for ship in user_team_ships:
+            user_info = UserSerializer(ship.user).data
+            user_info['identify'] = ship.identify
+            users_data.append(user_info)
         team = Team.objects.get(id=team_id)
         data = {
             'team': TeamSerializer(team).data,
-            'users': UserTeamShipSerializer(user_team_ships, many=True).data,
+            'users': users_data
         }
         return ResponseTemplate(Error.SUCCESS, 'get team member success!', data=data)
     except Exception as e:
