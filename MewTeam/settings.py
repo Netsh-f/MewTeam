@@ -88,21 +88,21 @@ WSGI_APPLICATION = "MewTeam.wsgi.application"
 # 设置ASGI应用
 ASGI_APPLICATION = "MewTeam.asgi.application"
 
-# # 设置通道层的通信后台 - 本地测试用
-# CHANNEL_LAYERS = {
-#     "default": {
-#         "BACKEND": "channels.layers.InMemoryChannelLayer"
-#     }
-# }
-# redis 生产环境
+# 设置通道层的通信后台 - 本地测试用
 CHANNEL_LAYERS = {
     "default": {
-        "BACKEND": "channels_redis.core.RedisChannelLayer",
-        "CONFIG": {
-            "hosts": [("127.0.0.1", 6379)],
-        },
-    },
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
+    }
 }
+# redis 生产环境
+# CHANNEL_LAYERS = {
+#     "default": {
+#         "BACKEND": "channels_redis.core.RedisChannelLayer",
+#         "CONFIG": {
+#             "hosts": [("127.0.0.1", 6379)],
+#         },
+#     },
+# }
 
 
 # Database
