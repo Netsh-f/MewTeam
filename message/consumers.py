@@ -56,7 +56,7 @@ class ChatConsumer(WebsocketConsumer):
             mention_user_id_list = text_data['mention_user_id_list']
             message = Message.objects.create(sender_user_id=self.user_id, team_id=self.team_id, text=text)
             for user_id in mention_user_id_list:
-                Mention.objects.create(from_user_id=self.user_id, to_user_id=user_id, message=message)
+                Mention.objects.create(sender_user_id=self.user_id, receiver_user_id=user_id, message=message)
             async_to_sync(self.channel_layer.group_send)(
                 self.room_group_name, {"type": "chat.message", "data": MessageSerializer(message).data}
             )
