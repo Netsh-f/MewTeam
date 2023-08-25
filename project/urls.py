@@ -7,9 +7,9 @@
 from django.urls import path
 from project.views import curd
 urlpatterns = [
-    path('create/<int:team_id>/', curd.create_project, name='create_project'),
-    path('update/<int:team_id>/<int:pro_id>/', curd.update_project, name='update_project'),
-    path('delete/<int:team_id>/<int:pro_id>/', curd.delete_project, name='delete_project'),
-    path('recover/<int:team_id>/<int:pro_id>/', curd.recover_project, name="recover_project"),
-    path('list/<int:team_id>/<int:pro_id>/', curd.list_project, name='list_project')
+    path('teams/<int:team_id>/create/', curd.create_project, name='create_project'),
+    path('teams/<int:team_id>/projects/<int:pro_id>/update/', curd.update_project, name='update_project'),
+    path('teams/<int:team_id>/projects/<int:pro_id>/delete/', curd.delete_project, name='delete_project'),
+    path('teams/<int:team_id>/projects/<int:pro_id>/recover/', curd.recover_project, name="recover_project"),
+    path('teams/<int:team_id>/projects/<int:pro_id>/list/', curd.list_project, name='list_project')
 ]

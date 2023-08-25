@@ -31,8 +31,8 @@ def create_project(request, team_id):
     project = Project.objects.filter(name=name).first()
     if project != None:
         return ResponseTemplate(Error.PRO_NAME_EXISTS, '项目名存在')
-    project.team_id = team_id
-    project.save()
+
+    Project.objects.create(team_id=team_id, name=name)
     return ResponseTemplate(Error.SUCCESS, '创建成功！', data=ProjectSerializer(project).data)
 
 @api_view(['PUT'])
