@@ -4,20 +4,20 @@
 # @Author  : Lynx
 # @File    : curd.py
 #
-from django.shortcuts import render
 from rest_framework.decorators import api_view
 
 from project.models import Project
 from project.serializers import ProjectSerializer
+from project.views.utils.safety_check import _is_legal_identity
 from shared.error import Error
 from shared.res_temp import ResponseTemplate
 from shared.token import check_token
-from utils.safety_check import _is_legal_identity
 
 # Create your views here.
 
 @api_view(['POST'])
 def create_project(request, team_id):
+    print("___________________step here_______________________")
     response, user_id = check_token(request)
     if user_id == -1:
         return response
