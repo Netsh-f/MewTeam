@@ -13,9 +13,12 @@ confirmation = input("请确认位于个人开发分支并已将所有更改提�
 if confirmation.lower() == "y":
     os.system("git checkout dev")
     os.system("git pull")
+    os.system(f"git checkout {branch_name}")
+    os.system("git merge dev")
+    print("该步骤可能会发生冲突，git分析中……")
+    os.system("git checkout dev")
     os.system(f"git merge {branch_name}")
     os.system("git push")
     os.system(f"git checkout {branch_name}")
-    os.system("git merge dev")
 else:
     print("操作已取消。")
