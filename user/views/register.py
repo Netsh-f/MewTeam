@@ -32,11 +32,11 @@ def register(request):
         email = data['email']
         name = data['name']
 
-        if User.objects.filter(nickname=nickname):
+        if User.objects.filter(nickname=nickname).exists():
             return ResponseTemplate(Error.NICKNAME_EXISTS, '昵称已被注册')
-        if User.objects.filter(email=email):
+        if User.objects.filter(email=email).exists():
             return ResponseTemplate(Error.EMAIL_EXISTS, '邮箱已被注册')
-        if User.objects.filter(email=email):
+        if User.objects.filter(email=email).exists():
             return ResponseTemplate(Error.NAME_EXISTS, '真实姓名已被注册')
 
         user = User.objects.create(nickname=nickname, email=email, name=name, password=data['password'])
