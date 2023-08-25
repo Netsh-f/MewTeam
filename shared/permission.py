@@ -31,3 +31,7 @@ def is_normal(user_id, team_id):
         return ship.identify == UserTeamShip.Identify.NORMAL
     except UserTeamShip.DoesNotExist:
         return False
+
+
+def is_team_member(user_id, team_id):
+    return UserTeamShip.objects.filter(user_id=user_id, team_id=team_id) is None

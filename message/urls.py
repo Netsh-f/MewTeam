@@ -7,8 +7,9 @@
 
 from django.urls import path
 from message import views
+from message.views.history import get_history
 
 urlpatterns = [
-    path('teams/<int:team_id>/message/history/')
+    path('teams/<int:team_id>/message/history/', get_history)
 ]
 

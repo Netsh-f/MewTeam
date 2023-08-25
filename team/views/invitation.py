@@ -13,10 +13,10 @@ from user.models import User
 
 @api_view(['POST'])
 def generate_invitation(request, team_id):
-    response, current_user_id = check_token(request)
-    if current_user_id == -1:
-        return response
     try:
+        response, current_user_id = check_token(request)
+        if current_user_id == -1:
+            return response
         email_addr = request.data['email']
         team = Team.objects.get(id=team_id)
         sender = User.objects.get(id=current_user_id)
@@ -37,10 +37,10 @@ def generate_invitation(request, team_id):
 
 @api_view(['POST'])
 def join_team_with_invitation(request):
-    response, current_user_id = check_token(request)
-    if current_user_id == -1:
-        return response
     try:
+        response, current_user_id = check_token(request)
+        if current_user_id == -1:
+            return response
         invitation_code = request.data['invitation_code']
         invitation = Invitations.objects.filter(invitation_code=invitation_code).first()
         if not invitation:
