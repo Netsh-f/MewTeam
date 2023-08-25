@@ -176,3 +176,18 @@ def remove_team_user(request, team_id, user_id):
         return ResponseTemplate(Error.DATABASE_INTERNAL_ERROR, str(e))
     except Exception as e:
         return ResponseTemplate(Error.FAILED, str(e))
+
+
+@api_view(['POST'])
+def join_team_with_invitation(request):
+    response, current_user_id = check_token(request)
+    if current_user_id == -1:
+        return response
+    try:
+        invitation_code = request.data['invitation_code']
+        invitation = Invitations.objects.filter(invitation_code=invitation_code).first()
+        if not invitation:
+            return ResponseTemplate(Error.INVALID_INVITATION_CODE, 'Invalid invitation code')
+        UserTeamShip.objects.create()
+    except Exception as e:
+        return ResponseTemplate(Error.FAILED, str(e))

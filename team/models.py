@@ -15,9 +15,12 @@ class UserTeamShip(models.Model):
         ADMIN = 1, "Admin"
         CREATOR = 2, "Creator"
 
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    team = models.OneToOneField(Team, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    team = models.ForeignKey(Team, on_delete=models.CASCADE)
     identify = models.PositiveSmallIntegerField(choices=Identify.choices, default=Identify.NORMAL)
+
+    class Meta:
+        unique_together = ('user', 'team')
 
 
 class Invitations(models.Model):
