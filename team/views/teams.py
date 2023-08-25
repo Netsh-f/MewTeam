@@ -6,17 +6,17 @@ from shared.error import Error
 from shared.res_temp import ResponseTemplate
 from shared.token import check_token
 from team.models import UserTeamShip, Team
-from team.views.utils.permission import is_creator
+from shared.permission import is_creator
 
 
 @api_view(['POST'])
 def create_team(request):
-    response, user_id = check_token(request)
-    if user_id == -1:
-        return response
-    data = request.data
-    name = data['name']
     try:
+        response, user_id = check_token(request)
+        if user_id == -1:
+            return response
+        data = request.data
+        name = data['name']
         with transaction.atomic():
             new_team = Team.objects.create(name=name)
             UserTeamShip.objects.create(user_id=user_id, team=new_team, identify=UserTeamShip.Identify.CREATOR)
@@ -27,10 +27,10 @@ def create_team(request):
 
 @api_view(['GET'])
 def get_team_list(request):
-    response, current_user_id = check_token(request)
-    if current_user_id == -1:
-        return response
     try:
+        response, current_user_id = check_token(request)
+        if current_user_id == -1:
+            return response
         ships = UserTeamShip.objects.filter(user_id=current_user_id)
         team_list = []
         for ship in ships:
@@ -47,10 +47,10 @@ def get_team_list(request):
 
 @api_view(['DELETE'])
 def disband_team(request, team_id):
-    response, current_user_id = check_token(request)
-    if current_user_id == -1:
-        return response
     try:
+        response, current_user_id = check_token(request)
+        if current_user_id == -1:
+            return response
         team = Team.objects.get(id=team_id)
         if not is_creator(current_user_id, team_id):
             return ResponseTemplate(Error.PERMISSION_DENIED, 'you are not the creator of the team')
