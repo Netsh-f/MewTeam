@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from message.models import Message
+from message.models import Message, Mention
 from team.serializers import TeamSerializer
 from user.serializers import UserSerializer
 
@@ -12,4 +12,12 @@ class MessageSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Message
+        fields = '__all__'
+
+
+class MentionSerializer(serializers.ModelSerializer):
+    message = MessageSerializer()
+
+    class Meta:
+        model = Mention
         fields = '__all__'

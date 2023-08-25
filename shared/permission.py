@@ -34,4 +34,4 @@ def is_normal(user_id, team_id):
 
 
 def is_team_member(user_id, team_id):
-    return UserTeamShip.objects.filter(user_id=user_id, team_id=team_id) is None
+    return UserTeamShip.objects.filter(user_id=user_id, team_id=team_id) is not None
