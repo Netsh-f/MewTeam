@@ -17,7 +17,6 @@ from shared.token import check_token
 
 @api_view(['POST'])
 def create_project(request, team_id):
-    print("___________________step here_______________________")
     response, user_id = check_token(request)
     if user_id == -1:
         return response
@@ -25,12 +24,16 @@ def create_project(request, team_id):
     name = data['name']
     if not _is_legal_identity(user_id, team_id):
         return ResponseTemplate(Error.ILLEGAL_IDENTITY, '非法创建，请检查您的用户状态和团队信息')
-    project = Project.objects.create(name=name, team_id=team_id)
+
+    project = Project.objects.filter(name=name).first()
+    if project != None:
+        return ResponseTemplate(Error.PRO_NAME_EXISTS, '项目名存在')
+    project.team_id = team_id
     project.save()
-    return ResponseTemplate(Error.SUCCESS, '创建成功！', data=ProjectSerializer(project))
+    return ResponseTemplate(Error.SUCCESS, '创建成功！', data=ProjectSerializer(project).data)
 
 @api_view(['PUT'])
-def update_project(request, team_id):
+def update_project(request, team_id, pro_id):
     response, user_id = check_token(request)
     if user_id == -1:
         return response
@@ -38,17 +41,45 @@ def update_project(request, team_id):
     name = data['name']
     if not _is_legal_identity(user_id, team_id):
         return ResponseTemplate(Error.ILLEGAL_IDENTITY, '非法更改，请检查您的用户状态和团队信息')
-    Project.objects.filter(team_id=team_id).update(name=name)
+
+    project = Project.objects.filter(id=pro_id, is_deleted=False).first()
+    if project == None:
+        return ResponseTemplate(Error.PRO_NOT_FOUND, '项目不存在')
+    project.name = name
+    project.save()
     return ResponseTemplate(Error.SUCCESS, '修改成功！')
 
 @api_view(['DELETE'])
-def delete_project(request, team_id):
+def delete_project(request, team_id, pro_id):
     response, user_id = check_token(request)
     if user_id == -1:
         return response
-    data = request.data
-    name = data['name']
     if not _is_legal_identity(user_id, team_id):
         return ResponseTemplate(Error.ILLEGAL_IDENTITY, '非法删除，请检查您的用户状态和团队信息')
-    Project.objects.filter().update(name=name)
-    return ResponseTemplate(Error.SUCCESS, '修改成功！')
+
+    project = Project.objects.filter(id=pro_id, is_deleted=False).first()
+    if project == None:
+        return ResponseTemplate(Error.PRO_NOT_FOUND, '项目不存在')
+    project.is_deleted = True
+    project.save()
+    return ResponseTemplate(Error.SUCCESS, '删除成功！')
+
+@api_view(['POST'])
+def recover_project(request, team_id, pro_id):
+    response, user_id = check_token(request)
+    if user_id == -1:
+        return response
+    if not _is_legal_identity(user_id, team_id):
+        return ResponseTemplate(Error.ILLEGAL_IDENTITY, '非法恢复，请检查您的用户状态和团队信息')
+
+    project = Project.objects.filter(id=pro_id, is_deleted=True).first()
+    if project == None:
+        return ResponseTemplate(Error.PRO_NOT_FOUND, '项目不存在')
+    project.is_deleted = False
+    project.save()
+    return ResponseTemplate(Error.SUCCESS, '删除成功！')
+
+
+@api_view(['GET'])
+def list_project(request, team_id, pro_id):
+    pass
