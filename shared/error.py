@@ -25,7 +25,9 @@ class Error:
     # team modules
     PERMISSION_DENIED = 30001
     IDENTIFY_ERROR = 30002
+    TEAM_NOT_EXISTS = 30003
 
     # project modules
     DATABASE_INTERNAL_ERROR = 40001
     DATA_NOT_FOUND = 40002
+

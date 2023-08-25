@@ -1,0 +1,8 @@
+import secrets
+import string
+
+
+def generate_invitation_code(length=6):
+    characters = string.ascii_letters + string.digits
+    invitation_code = ''.join(secrets.choice(characters) for _ in range(length))
+    return invitation_code
