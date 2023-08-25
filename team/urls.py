@@ -10,4 +10,5 @@ urlpatterns = [
     path('teams/<int:team_id>/invitations/send/', teams.generate_invitation),
     path('user/teams/', teams.get_team_list),
     path('teams/join/', teams.join_team_with_invitation),
+    path('teams/<int:team_id>', teams.disband_team),
 ]

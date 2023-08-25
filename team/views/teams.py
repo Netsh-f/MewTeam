@@ -1,3 +1,5 @@
+import logging
+
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
 from rest_framework import status
@@ -12,6 +14,8 @@ from shared.token import check_token
 from team.models import UserTeamShip, Team, Invitations
 from user.models import User
 
+logger = logging.getLogger(__name__)
+
 
 @api_view(['POST'])
 def create_team(request):
@@ -24,7 +28,7 @@ def create_team(request):
         with transaction.atomic():
             new_team = Team.objects.create(name=name)
             UserTeamShip.objects.create(user_id=user_id, team=new_team, identify=UserTeamShip.Identify.CREATOR)
-            return ResponseTemplate(Error.SUCCESS, 'Team created successfully!')
+            return ResponseTemplate(Error.SUCCESS, 'Team created successfully!', data={'team_id': new_team.id})
     except Exception as e:
         return ResponseTemplate(Error.DATABASE_INTERNAL_ERROR, str(e) + "user_id=" + str(user_id))
 
@@ -57,6 +61,14 @@ def _is_admin_or_creator(user_id, team_id):
     try:
         ship = UserTeamShip.objects.get(user_id=user_id, team_id=team_id)
         return ship.identify in [UserTeamShip.Identify.ADMIN, UserTeamShip.Identify.CREATOR]
+    except UserTeamShip.DoesNotExist:
+        return False
+
+
+def _is_creator(user_id, team_id):
+    try:
+        ship = UserTeamShip.objects.get(user_id=user_id, team_id=team_id)
+        return ship.identify == UserTeamShip.Identify.CREATOR
     except UserTeamShip.DoesNotExist:
         return False
 
@@ -130,6 +142,7 @@ def generate_invitation(request, team_id):
         invitation = Invitations(team=team, sender=sender, invitation_code=invitation_code, receiver_email=email_addr)
         invitation.save()
         send_invitation(invitation)
+        return ResponseTemplate(Error.SUCCESS, 'send invitation successfully')
     except KeyError:
         return ResponseTemplate(Error.FAILED, 'Invalid key', status=status.HTTP_400_BAD_REQUEST)
     except Team.DoesNotExist:
@@ -192,7 +205,23 @@ def join_team_with_invitation(request):
         user = User.objects.get(id=current_user_id)
         team = invitation.team
         UserTeamShip.objects.create(user=user, team=team)
+        return ResponseTemplate(Error.SUCCESS, 'join team successfully')
     except ObjectDoesNotExist as e:
         return ResponseTemplate(Error.DATABASE_INTERNAL_ERROR, str(e))
+    except Exception as e:
+        return ResponseTemplate(Error.FAILED, str(e))
+
+
+@api_view(['DELETE'])
+def disband_team(request, team_id):
+    response, current_user_id = check_token(request)
+    if current_user_id == -1:
+        return response
+    try:
+        team = Team.objects.get(id=team_id)
+        if not _is_creator(current_user_id, team_id):
+            return ResponseTemplate(Error.PERMISSION_DENIED, 'you are not the creator of the team')
+        team.delete()
+        return ResponseTemplate(Error.SUCCESS, 'Team disbanded successfully')
     except Exception as e:
         return ResponseTemplate(Error.FAILED, str(e))
