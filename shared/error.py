@@ -25,6 +25,7 @@ class Error:
     PASSWORD_NOT_CORRECT = 10007
 
     # message modules
+    INVALID_DATE_FORMAT = 20001
 
     # team modules
     PERMISSION_DENIED = 30001

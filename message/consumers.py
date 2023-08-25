@@ -5,7 +5,7 @@ from urllib.parse import parse_qs
 from channels.generic.websocket import WebsocketConsumer
 from asgiref.sync import async_to_sync
 
-from message.models import Message, AtMessage
+from message.models import Message, Mention
 from message.serializers import MessageSerializer
 from shared.token import verify_token, get_identity_from_token
 
@@ -53,10 +53,10 @@ class ChatConsumer(WebsocketConsumer):
             text_data = json.loads(text_data)
             logger.error('in receive, text_data: ' + str(text_data))
             text = text_data["text"]
-            at_user_id_list = text_data['at_user_id_list']
+            mention_user_id_list = text_data['mention_user_id_list']
             message = Message.objects.create(sender_user_id=self.user_id, team_id=self.team_id, text=text)
-            for user_id in at_user_id_list:
-                AtMessage.objects.create(from_user_id=self.user_id, to_user_id=user_id, message=message)
+            for user_id in mention_user_id_list:
+                Mention.objects.create(from_user_id=self.user_id, to_user_id=user_id, message=message)
             async_to_sync(self.channel_layer.group_send)(
                 self.room_group_name, {"type": "chat.message", "data": MessageSerializer(message).data}
             )

@@ -15,6 +15,8 @@ class Message(models.Model):
     sender_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sent_messages')
     receiver_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='received_messages',
                                       null=True)  # 群聊时为空
+    sender_deleted = models.BooleanField(default=False)
+    receiver_deleted = models.BooleanField(default=False)
     team = models.ForeignKey(Team, on_delete=models.CASCADE, null=True)  # 私聊时为空
     timestamp = models.DateTimeField(default=timezone.now)
     mtype = models.PositiveSmallIntegerField(choices=MessageType.choices, default=MessageType.TEXT)
@@ -31,9 +33,11 @@ class Message(models.Model):
         ]
 
 
-class AtMessage(models.Model):
-    from_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sent_at_message')
-    to_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='received_at_message')
+class Mention(models.Model):
+    sender_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sent_mention')
+    receiver_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='received_mention')
+    sender_deleted = models.BooleanField(default=False)
+    receiver_deleted = models.BooleanField(default=False)
     message = models.ForeignKey(Message, on_delete=models.CASCADE, null=True)
     document = models.ForeignKey(Document, on_delete=models.CASCADE, null=True)
     timestamp = models.DateTimeField(default=timezone.now)
