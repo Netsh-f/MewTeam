@@ -16,7 +16,7 @@ def logout(request):
     return ResponseTemplate(Error.SUCCESS, '登出成功！')
 
 @api_view(['POST'])
-def writeoff(request, user_id):
+def logoff(request, user_id):
     user = User.objects.get(id=user_id)
     if user:
         user.delete()
