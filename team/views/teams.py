@@ -5,7 +5,6 @@ from django.db import transaction
 from rest_framework import status
 from rest_framework.decorators import api_view
 
-from MewTeam.settings import SECRETS
 from shared.email import send_invitation
 from shared.error import Error
 from shared.random import generate_invitation_code
