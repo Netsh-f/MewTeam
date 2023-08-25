@@ -3,6 +3,7 @@ from django.db import transaction
 from rest_framework import status
 from rest_framework.decorators import api_view
 
+from MewTeam.settings import SECRETS
 from shared.email import send_invitation
 from shared.error import Error
 from shared.random import generate_invitation_code
@@ -188,6 +189,10 @@ def join_team_with_invitation(request):
         invitation = Invitations.objects.filter(invitation_code=invitation_code).first()
         if not invitation:
             return ResponseTemplate(Error.INVALID_INVITATION_CODE, 'Invalid invitation code')
-        UserTeamShip.objects.create()
+        user = User.objects.get(id=current_user_id)
+        team = invitation.team
+        UserTeamShip.objects.create(user=user, team=team)
+    except ObjectDoesNotExist as e:
+        return ResponseTemplate(Error.DATABASE_INTERNAL_ERROR, str(e))
     except Exception as e:
         return ResponseTemplate(Error.FAILED, str(e))

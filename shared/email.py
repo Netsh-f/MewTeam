@@ -5,7 +5,7 @@ from team.models import Invitations
 
 
 def _send_email(subject, message, email_addr):
-    send_mail(subject, message, settings.EMAIL_HOST_USER, email_addr, fail_silently=False)
+    send_mail(subject, message, settings.EMAIL_HOST_USER, [email_addr], fail_silently=False)
 
 
 def send_invitation(invitation: Invitations):
