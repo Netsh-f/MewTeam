@@ -11,6 +11,10 @@ class Error:
     # HTTP exception status
     FAILED = -1
 
+    # global error
+    DATABASE_INTERNAL_ERROR = 1001
+    DATA_NOT_FOUND = 1002
+
     # user modules
     NICKNAME_EXISTS = 10001
     EMAIL_EXISTS = 10002
@@ -29,8 +33,6 @@ class Error:
     INVALID_INVITATION_CODE = 30004
 
     # project modules
-
-
-    DATABASE_INTERNAL_ERROR = 40001
-    DATA_NOT_FOUND = 40002
+    ILLEGAL_IDENTITY = 40001
+    # 这里的身份错误有三种：用户不存在，团队不存在，用户不在团队中
 

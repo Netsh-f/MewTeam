@@ -8,6 +8,7 @@ from team.models import Team
 class Project(models.Model):
     name = models.CharField(max_length=63)
     team = models.ForeignKey(Team, on_delete=models.CASCADE)
+    is_deleted = models.BooleanField(default=False)
 
 
 class Document(models.Model):
