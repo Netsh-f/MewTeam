@@ -149,9 +149,29 @@ def get_team_list(request):
         team_list = []
         for ship in ships:
             team_list.append({
+                'team_id': ship.team.id,
                 'name': ship.team.name
             })
         return ResponseTemplate(Error.SUCCESS, 'get current user team list successfully', data=team_list)
+    except ObjectDoesNotExist as e:
+        return ResponseTemplate(Error.DATABASE_INTERNAL_ERROR, str(e))
+    except Exception as e:
+        return ResponseTemplate(Error.FAILED, str(e))
+
+
+@api_view(['DELETE'])
+def remove_team_user(request, team_id, user_id):
+    response, current_user_id = check_token(request)
+    if current_user_id == -1:
+        return response
+    if not _is_admin_or_creator(current_user_id, team_id):
+        return ResponseTemplate(Error.PERMISSION_DENIED, 'The current user is not a admin or creator in this team.')
+    if _is_admin_or_creator(user_id):
+        return ResponseTemplate(Error.IDENTIFY_ERROR, 'This user to be removed is the admin or creator in this team.')
+    try:
+        ship = UserTeamShip.objects.get(user_id=user_id, team_id=team_id)
+        ship.delete()
+        return ResponseTemplate(Error.SUCCESS, 'remove this user from team successfully')
     except ObjectDoesNotExist as e:
         return ResponseTemplate(Error.DATABASE_INTERNAL_ERROR, str(e))
     except Exception as e:
