@@ -35,5 +35,7 @@ class Error:
 
     # project modules
     ILLEGAL_IDENTITY = 40001
+    PRO_NAME_EXISTS = 40002
+    PRO_NOT_FOUND = 40003
     # 这里的身份错误有三种：用户不存在，团队不存在，用户不在团队中
 
