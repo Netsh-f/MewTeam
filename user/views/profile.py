@@ -29,7 +29,7 @@ def edit_user_avatar(request):
         if file.size > settings.MAX_AVATAR_FILE_SIZE:
             return ResponseTemplate(Error.FILE_SIZE_ILLEGAL, 'Size of file is too large. It should be less than 4mb.')
         user = User.objects.get(id=user_id)
-        avatar = f"{settings.AVATAR_ROOT}{user.id}.{file.name.split('.')[-1]}"
+        avatar = f"{settings.AVATAR_URL}{user.id}.{file.name.split('.')[-1]}"
         os.makedirs(os.path.dirname(avatar), exist_ok=True)
         with open(avatar, "wb+") as f:
             for chunk in file.chunks():

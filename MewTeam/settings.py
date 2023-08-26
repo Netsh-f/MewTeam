@@ -34,7 +34,9 @@ with open("secrets.yaml", 'r') as f:
 with open("config.yaml", 'r') as f:
     CONFIG = yaml.safe_load(f)
 
-MEDIA_URL = '/media/'
+MEDIA_URL = 'media/'
+AVATAR_URL = os.path.join(MEDIA_URL, "avatar/")
+
 MEDIA_ROOT = os.path.join(BASE_DIR, "media/")
 AVATAR_ROOT = os.path.join(MEDIA_ROOT, "avatar/")
 MESSAGE_ROOT = os.path.join(MEDIA_ROOT, "message/")

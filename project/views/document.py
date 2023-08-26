@@ -8,7 +8,7 @@
 from rest_framework.decorators import api_view
 
 from project.models import Document, Project
-from project.serializer import DocumentSerializer, DocumentSimpleSerializer
+from project.serializers import DocumentSerializer, DocumentSimpleSerializer
 from shared.error import Error
 from shared.permission import is_team_member
 from shared.res_temp import ResponseTemplate
