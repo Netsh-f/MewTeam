@@ -29,13 +29,11 @@ def edit_user_avatar(request):
             return ResponseTemplate(Error.FILE_SIZE_ILLEGAL, 'Size of file is too large. It should be less than 4mb.')
         user = User.objects.get(id=user_id)
         avatar = f"{CONFIG['AVATAR_PATH']}{user.id}.{file.name.split('.')[-1]}"
-        os.makedirs(os.path.dirname(avatar), exist_ok=True)
 
-        # f = open(f"{CONFIG['PROJECT_PATH']}{avatar}", "wb+")
-        f = open(avatar, "wb+")
-        for chunk in file.chunks():
-            f.write(chunk)
-        f.close()
+        os.makedirs(os.path.dirname(avatar), exist_ok=True)
+        with open(avatar, "wb+") as f:
+            for chunk in file.chunks():
+                f.write(chunk)
         user.avatar = avatar
         user.save()
         return ResponseTemplate(Error.SUCCESS, 'Edit avatar successfully')
