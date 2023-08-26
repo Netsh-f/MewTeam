@@ -103,9 +103,6 @@ def list_project(request, team_id):
 
     thirty_days_ago = datetime.now() - timedelta(days=30)
     Project.objects.filter(is_deleted=True, delete_time__lt=thirty_days_ago).delete()
+    projects = Project.objects.all()
 
-    project_list = []
-    for project in Project.objects.all():
-        project_list.append(ProjectSerializer(project).data)
-
-    return ResponseTemplate(Error.SUCCESS, '项目列表获取成功!', data=project_list)
+    return ResponseTemplate(Error.SUCCESS, '项目列表获取成功!', data=ProjectSerializer(projects, many=True).data)

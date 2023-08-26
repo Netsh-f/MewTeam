@@ -10,6 +10,7 @@ class Project(models.Model):
     name = models.CharField(max_length=63)
     team = models.ForeignKey(Team, on_delete=models.CASCADE)
     is_deleted = models.BooleanField(default=False)
+    create_time = models.DateTimeField(default=timezone.now)
     delete_time = models.DateTimeField(null=True)
 
 
