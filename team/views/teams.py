@@ -7,6 +7,7 @@ from shared.res_temp import ResponseTemplate
 from shared.token import check_token
 from team.models import UserTeamShip, Team
 from shared.permission import is_creator
+from team.serializers import TeamSerializer
 
 
 @api_view(['POST'])
@@ -35,8 +36,8 @@ def get_team_list(request):
         team_list = []
         for ship in ships:
             team_list.append({
-                'team_id': ship.team.id,
-                'name': ship.team.name
+                'team': TeamSerializer(ship.team).data,
+                'identity': ship.identify,
             })
         return ResponseTemplate(Error.SUCCESS, 'get current user team list successfully', data=team_list)
     except ObjectDoesNotExist as e:
