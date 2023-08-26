@@ -17,3 +17,9 @@ class Document(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     content = models.JSONField()
     timestamp = models.DateTimeField(default=timezone.now)
+
+
+class Prototype(models.Model):
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    content = models.JSONField()
+    timestamp = models.DateTimeField(default=timezone.now)
