@@ -39,3 +39,7 @@ class Error:
     PRO_NOT_FOUND = 40003
     # 这里的身份错误有三种：用户不存在，团队不存在，用户不在团队中
 
+    # file
+    FILE_MISSING = 50001
+    FILE_TYPE_INVALID = 50002
+    FILE_SIZE_ILLEGAL = 50003

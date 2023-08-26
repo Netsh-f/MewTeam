@@ -6,6 +6,7 @@ class User(models.Model):
     nickname = models.CharField(max_length=63)
     password = models.CharField(max_length=63)
     name = models.CharField(max_length=63)
+    avatar = models.CharField(max_length=127)
 
     class Meta:
         verbose_name = '用户'
