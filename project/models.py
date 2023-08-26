@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 
 from team.models import Team
 
@@ -14,4 +15,5 @@ class Project(models.Model):
 
 class Document(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
-    text = models.TextField()
+    content = models.JSONField()
+    timestamp = models.DateTimeField(default=timezone.now)

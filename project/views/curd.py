@@ -16,6 +16,7 @@ from shared.error import Error
 from shared.res_temp import ResponseTemplate
 from shared.token import check_token
 
+
 # Create your views here.
 
 @api_view(['POST'])
@@ -37,6 +38,7 @@ def create_project(request, team_id):
     new_project.save()
     return ResponseTemplate(Error.SUCCESS, '创建成功！', data=ProjectSerializer(new_project).data)
 
+
 @api_view(['PUT'])
 def update_project(request, team_id, pro_id):
     response, user_id = check_token(request)
@@ -57,6 +59,7 @@ def update_project(request, team_id, pro_id):
     project.save()
     return ResponseTemplate(Error.SUCCESS, '修改成功！')
 
+
 @api_view(['DELETE'])
 def delete_project(request, team_id, pro_id):
     response, user_id = check_token(request)
@@ -72,6 +75,7 @@ def delete_project(request, team_id, pro_id):
     project.delete_time = datetime.now()
     project.save()
     return ResponseTemplate(Error.SUCCESS, '删除成功！')
+
 
 @api_view(['POST'])
 def recover_project(request, team_id, pro_id):
