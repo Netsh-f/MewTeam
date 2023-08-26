@@ -141,7 +141,6 @@ cython_debug/
 create_mig.py
 
 # Deployment files
-uwsgi.ini
 
 .idea/
 secrets.yaml
