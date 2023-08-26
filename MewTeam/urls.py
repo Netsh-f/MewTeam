@@ -16,6 +16,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
+from django.conf.urls.static import static
+
+from MewTeam import settings
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -25,5 +28,7 @@ urlpatterns = [
     path("api/team/", include("team.urls")),
     path("api/project/", include("project.urls")),
     path("api/file/", include("file.urls")),
-    path("user/", include("user.urls"))
+    path("user/", include("user.urls")),
 ]
+
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

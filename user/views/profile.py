@@ -4,6 +4,7 @@ import os.path
 from django.http import HttpResponse
 from rest_framework.decorators import api_view
 
+from MewTeam import settings
 from MewTeam.settings import MEDIA_URL, MEDIA_ROOT, BASE_DIR, CONFIG
 from shared.error import Error
 from shared.res_temp import ResponseTemplate
@@ -25,10 +26,10 @@ def edit_user_avatar(request):
             return ResponseTemplate(Error.FILE_MISSING, 'Missing image file')
         if not validate_image_name(file.name):
             return ResponseTemplate(Error.FILE_TYPE_INVALID, 'Invalid image file type')
-        if file.size > CONFIG['MAX_AVATAR_FILE_SIZE']:
+        if file.size > settings.MAX_AVATAR_FILE_SIZE:
             return ResponseTemplate(Error.FILE_SIZE_ILLEGAL, 'Size of file is too large. It should be less than 4mb.')
         user = User.objects.get(id=user_id)
-        avatar = f"{CONFIG['AVATAR_PATH']}{user.id}.{file.name.split('.')[-1]}"
+        avatar = f"{settings.AVATAR_ROOT}{user.id}.{file.name.split('.')[-1]}"
         os.makedirs(os.path.dirname(avatar), exist_ok=True)
 
         # f = open(f"{CONFIG['PROJECT_PATH']}{avatar}", "wb+")
@@ -41,6 +42,7 @@ def edit_user_avatar(request):
         return ResponseTemplate(Error.SUCCESS, 'Edit avatar successfully')
     except Exception as e:
         return ResponseTemplate(Error.FAILED, str(e))
+
 
 @api_view(['GET'])
 def view_user_avatar(request, user_id):
