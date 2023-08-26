@@ -37,8 +37,10 @@ with open("config.yaml", 'r') as f:
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, "media/")
 AVATAR_ROOT = os.path.join(MEDIA_ROOT, "avatar/")
+MESSAGE_ROOT = os.path.join(MEDIA_ROOT, "message/")
 
 MAX_AVATAR_FILE_SIZE = 4 * 1024 * 1024
+MAX_MESSAGE_FILE_SIZE = 64 * 1024 * 1024
 # WEB_HOST_MEDIA_URL = os.path.join('http://127.0.0.1:8000', MEDIA_URL[1:], 'avatar/')
 
 # Application definition

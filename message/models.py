@@ -22,7 +22,7 @@ class Message(models.Model):
     mtype = models.PositiveSmallIntegerField(choices=MessageType.choices, default=MessageType.TEXT)
     checked = models.BooleanField(default=False)
     text = models.TextField(null=True)
-    file_path = models.FileField(upload_to='res/msg/', null=True)
+    file = models.CharField(max_length=127, null=True)
 
     class Meta:
         constraints = [
@@ -31,6 +31,11 @@ class Message(models.Model):
                 name='receiver_user_xor_team'
             )
         ]
+
+
+class MessageFile(models.Model):
+    mid = models.CharField(max_length=36, unique=True)
+    filepath = models.CharField(max_length=127)
 
 
 class Mention(models.Model):
