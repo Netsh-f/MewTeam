@@ -140,6 +140,9 @@ cython_debug/
 # Lynx's private files
 create_mig.py
 
+# Deployment files
+uwsgi.ini
+
 .idea/
 secrets.yaml
 secrets_debug.yaml
