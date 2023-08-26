@@ -31,12 +31,9 @@ def edit_user_avatar(request):
         user = User.objects.get(id=user_id)
         avatar = f"{settings.AVATAR_ROOT}{user.id}.{file.name.split('.')[-1]}"
         os.makedirs(os.path.dirname(avatar), exist_ok=True)
-
-        # f = open(f"{CONFIG['PROJECT_PATH']}{avatar}", "wb+")
-        f = open(avatar, "wb+")
-        for chunk in file.chunks():
-            f.write(chunk)
-        f.close()
+        with open(avatar, "wb+") as f:
+            for chunk in file.chunks():
+                f.write(chunk)
         user.avatar = avatar
         user.save()
         return ResponseTemplate(Error.SUCCESS, 'Edit avatar successfully')
