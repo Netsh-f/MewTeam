@@ -75,10 +75,9 @@ def get_document_by_id(request, document_id):
         response, user_id = check_token(request)
         if user_id == -1:
             return response
-        project = Project.objects.get(id=pro_id)
-        if not is_team_member(user_id, project.team_id):
-            return ResponseTemplate(Error.PERMISSION_DENIED, 'you are not one member of this team')
         document = Document.objects.get(id=document_id)
+        if not is_team_member(user_id, document.project.team_id):
+            return ResponseTemplate(Error.PERMISSION_DENIED, 'you are not one member of this team')
         return ResponseTemplate(Error.SUCCESS, f'get {document_id} document successfully',
                                 data=DocumentSerializer(document).data)
     except Project.DoesNotExist:
