@@ -53,3 +53,10 @@ def join_team_with_invitation(request):
         return ResponseTemplate(Error.DATABASE_INTERNAL_ERROR, str(e))
     except Exception as e:
         return ResponseTemplate(Error.FAILED, str(e))
+
+@api_view(['POST'])
+def join_team(request, team_id, user_id):
+    UserTeamShip.objects.create(user_id=user_id, team_id=team_id)
+    return ResponseTemplate(Error.SUCCESS, 'create relationship successfully!', data={
+        'team_id': team_id, 'user_id': user_id
+    })
