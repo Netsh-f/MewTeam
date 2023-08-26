@@ -33,11 +33,9 @@ with open("secrets.yaml", 'r') as f:
     SECRETS = yaml.safe_load(f)
 with open("config.yaml", 'r') as f:
     CONFIG = yaml.safe_load(f)
-ERROR_CODE = CONFIG['ERROR_CODE']
-
 
 MEDIA_URL = 'media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 # Application definition
 
