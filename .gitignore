@@ -140,6 +140,8 @@ cython_debug/
 # Lynx's private files
 create_mig.py
 
+# Deployment files
+
 .idea/
 secrets.yaml
 secrets_debug.yaml
