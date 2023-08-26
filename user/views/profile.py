@@ -41,14 +41,3 @@ def edit_user_avatar(request):
         return ResponseTemplate(Error.FAILED, str(e))
 
 
-@api_view(['GET'])
-def view_user_avatar(request, user_id):
-    user = User.objects.filter(id=user_id)
-    if user:
-        avatar_path = user.first().avatar
-        if os.path.exists(avatar_path):
-            with open(avatar_path, 'rb') as image:
-                response = HttpResponse(image.read(), content_type='image/jpg')  # Adjust content type as needed
-                return response
-    else:
-        return HttpResponse("Image not found", status=404)
