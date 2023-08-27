@@ -28,7 +28,7 @@ def set_mention_checked(request, mention_id):
         if user_id == -1:
             return response
         mention = Mention.objects.get(id=mention_id)
-        if user_id != mention.to_user_id:
+        if user_id != mention.receiver_user_id:
             return ResponseTemplate(Error.PERMISSION_DENIED, 'This is not your mention')
         mention.checked = True
         mention.save()
@@ -60,7 +60,7 @@ def set_mention_deleted(request, mention_id):
         if user_id == -1:
             return response
         mention = Mention.objects.get(id=mention_id)
-        if user_id != mention.to_user_id:
+        if user_id != mention.receiver_user_id:
             return ResponseTemplate(Error.PERMISSION_DENIED, 'This is not your mention')
         mention.receiver_deleted = True
         mention.save()
