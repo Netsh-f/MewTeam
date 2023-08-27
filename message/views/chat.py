@@ -60,24 +60,28 @@ def get_session_id(request):
 
 
 @api_view(['GET'])
-def get_private_chat_history_messages(request):
+def get_private_chat_sessions(request):
     try:
         response, user_id = check_token(request)
         if user_id == -1:
             return response
         user = User.objects.get(id=user_id)
         sessions = Session.objects.filter(users=user).all()
-        data = []
-        for session in sessions:
-            session_info = {
-                "session": SessionSerializer(session).data,
-            }
-            messages = session.message_set.order_by('-timestamp')[:100]
-            message_info = []
-            for message in messages:
-                message_info.append(MessageSerializer(message).data)
-            session_info["messages"] = message_info
-            data.append(session_info)
-        return ResponseTemplate(Error.SUCCESS, 'get private chat history messages successfully', data=data)
+        return ResponseTemplate(Error.SUCCESS, 'get session list successfully',
+                                data=SessionSerializer(sessions, many=True).data)
+    except Exception as e:
+        return ResponseTemplate(Error.FAILED, str(e))
+
+
+@api_view(['GET'])
+def get_private_chat_history(request, session_id):
+    try:
+        response, user_id = check_token(request)
+        if user_id == -1:
+            return response
+        session = Session.objects.get(session_id=session_id)
+        messages = session.message_set.order_by('-timestamp')[:100]
+        return ResponseTemplate(Error.SUCCESS, 'get private chat history messages successfully',
+                                data=MessageSerializer(messages, many=True).data)
     except Exception as e:
         return ResponseTemplate(Error.FAILED, str(e))
