@@ -23,11 +23,9 @@ def get_mentions(request):
         return ResponseTemplate(Error.FAILED, str(e))
 
 
-@api_view(['GET'])
+@api_view(['PUT'])
 def set_mention_checked(request, mention_id):
     try:
-        logging.getLogger('__name__').error(request.META.get('HTTP_AUTHORIZATION', ''))
-        print(request.META.get('HTTP_AUTHORIZATION', ''))
         response, user_id = check_token(request)
         if user_id == -1:
             return response
