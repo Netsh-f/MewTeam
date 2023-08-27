@@ -17,6 +17,7 @@ class MessageSerializer(serializers.ModelSerializer):
 
 class MentionSerializer(serializers.ModelSerializer):
     message = MessageSerializer()
+    sender_user = UserSerializer()
 
     class Meta:
         model = Mention
