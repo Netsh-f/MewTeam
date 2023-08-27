@@ -10,6 +10,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import status
 from rest_framework.decorators import api_view
 
+from message.models import Mention
 from project.models import Document, Project, DocumentContent
 from project.serializers import DocumentContentSerializer, DocumentContentSimpleSerializer
 from shared.error import Error
@@ -44,13 +45,24 @@ def create_document(request, pro_id):
 @api_view(['POST'])
 def save_document(request, document_id):
     try:
-        response, user_id = check_token(request)
-        if user_id == -1:
+        response, current_user_id = check_token(request)
+        if current_user_id == -1:
             return response
         document = Document.objects.get(id=document_id)
-        if not is_team_member(user_id, document.project.team_id):
+        if not is_team_member(current_user_id, document.project.team_id):
             return ResponseTemplate(Error.PERMISSION_DENIED, 'you are not one member of this team')
         content = request.data['content']
+        at_user_list = request.data['at_user_list']
+
+        mentions = document.mention_set.all()
+        mentioned_list = mentions.values_list('receiver_user_id', flat=True)
+        for id in at_user_list:
+            if id not in mentioned_list:
+                Mention.objects.create(sender_user_id=current_user_id, receiver_user_id=id, document=document)
+        for mention in mentions:
+            if mention.receiver_user_id not in at_user_list:
+                mention.delete()
+
         DocumentContent.objects.create(document=document, content=content)
         return ResponseTemplate(Error.SUCCESS, 'save document successfully')
     except KeyError as keyError:
