@@ -103,7 +103,7 @@ def list_project(request, team_id):
 
     thirty_days_ago = datetime.now() - timedelta(days=30)
     Project.objects.filter(is_deleted=True, delete_time__lt=thirty_days_ago).delete()
-    projects = Project.objects.all()
+    projects = Project.objects.all(team_id=team_id)
 
     return ResponseTemplate(Error.SUCCESS, '项目列表获取成功!', data=ProjectSerializer(projects, many=True).data)
 
@@ -129,5 +129,5 @@ def destroy_all_project(request, team_id):
     if not _is_legal_identity(user_id, team_id):
         return ResponseTemplate(Error.ILLEGAL_IDENTITY, '非法清空，请检查您的用户状态和团队信息')
 
-    Project.objects.filter(is_deleted=True).delete()
+    Project.objects.filter(team_id=team_id, is_deleted=True).delete()
     return ResponseTemplate(Error.SUCCESS, '清空成功！')
