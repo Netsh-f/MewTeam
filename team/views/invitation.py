@@ -8,6 +8,7 @@ from shared.random import generate_invitation_code
 from shared.res_temp import ResponseTemplate
 from shared.token import check_token
 from team.models import UserTeamShip, Team, Invitations
+from team.serializers import InvitationsSerializer
 from user.models import User
 
 
@@ -24,7 +25,8 @@ def generate_invitation(request, team_id):
         invitation = Invitations(team=team, sender=sender, invitation_code=invitation_code, receiver_email=email_addr)
         invitation.save()
         send_invitation(invitation)
-        return ResponseTemplate(Error.SUCCESS, 'send invitation successfully')
+        return ResponseTemplate(Error.SUCCESS, 'send invitation successfully',
+                                data=InvitationsSerializer(invitation).data)
     except KeyError:
         return ResponseTemplate(Error.FAILED, 'Invalid key', status=status.HTTP_400_BAD_REQUEST)
     except Team.DoesNotExist:
