@@ -31,6 +31,13 @@ def edit_user_avatar(request):
         user = User.objects.get(id=user_id)
         avatar = f"{settings.AVATAR_URL}{user.id}.{file.name.split('.')[-1]}"
         os.makedirs(os.path.dirname(avatar), exist_ok=True)
+
+        for dir_file in os.listdir(os.path.dirname(avatar)):
+            if dir_file.startswith(str(user_id)):
+                dir_file_path = os.path.join(os.path.dirname(avatar), dir_file)
+                if os.path.isfile(dir_file_path):
+                    os.remove(dir_file_path)
+
         with open(avatar, "wb+") as f:
             for chunk in file.chunks():
                 f.write(chunk)
