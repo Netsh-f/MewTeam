@@ -18,6 +18,7 @@ class Document(models.Model):
     name = models.CharField(max_length=63)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     create_at = models.DateTimeField(default=timezone.now)
+    modified_at = models.DateTimeField(default=timezone.now)
 
 
 class DocumentContent(models.Model):
