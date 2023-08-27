@@ -20,4 +20,6 @@ urlpatterns = {
     path('documents/contents/<int:document_content_id>/', document.get_document_content_by_id),
     path('projects/<int:pro_id>/prototypes/', prototype.save_prototype),
     path('projects/<int:pro_id>/prototypes/latest/', prototype.get_latest_prototype),
+    path('teams/<int:team_id>/projects/<int:pro_id>/destroy/', curd.destroy_project, name='destroy_project'),
+    path('teams/<int:team_id>/destroy/', curd.destroy_all_project, name='destroy_all'),
 }

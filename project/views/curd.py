@@ -106,3 +106,28 @@ def list_project(request, team_id):
     projects = Project.objects.all()
 
     return ResponseTemplate(Error.SUCCESS, '项目列表获取成功!', data=ProjectSerializer(projects, many=True).data)
+
+@api_view(['DELETE'])
+def destroy_project(request, team_id, pro_id):
+    response, user_id = check_token(request)
+    if user_id == -1:
+        return response
+    if not _is_legal_identity(user_id, team_id):
+        return ResponseTemplate(Error.ILLEGAL_IDENTITY, '非法清空，请检查您的用户状态和团队信息')
+
+    project = Project.objects.filter(id=pro_id, is_deleted=True).first()
+    if project == None:
+        return ResponseTemplate(Error.PRO_NOT_FOUND, '项目不存在')
+    project.delete()
+    return ResponseTemplate(Error.SUCCESS, '清空成功！')
+
+@api_view(['DELETE'])
+def destroy_all_project(request, team_id):
+    response, user_id = check_token(request)
+    if user_id == -1:
+        return response
+    if not _is_legal_identity(user_id, team_id):
+        return ResponseTemplate(Error.ILLEGAL_IDENTITY, '非法清空，请检查您的用户状态和团队信息')
+
+    Project.objects.filter(is_deleted=True).delete()
+    return ResponseTemplate(Error.SUCCESS, '清空成功！')
