@@ -51,7 +51,7 @@ def save_document(request, document_id):
         data, guest_response = check_guest_token(request)
         if current_user_id == -1 and data is None:
             return response
-        if not data['edit_permission']:
+        if data is not None and not data['edit_permission']:
             return ResponseTemplate(Error.PERMISSION_DENIED, 'you can not edit this document')
         document = Document.objects.get(id=document_id)
         if not is_team_member(current_user_id, document.project.team_id):
@@ -63,14 +63,15 @@ def save_document(request, document_id):
         mentioned_list = mentions.values_list('receiver_user_id', flat=True)
         for at_user_id in at_user_list:
             if at_user_id not in mentioned_list:
-                Mention.objects.create(sender_user_id=current_user_id, receiver_user_id=id, document=document,
+                Mention.objects.create(sender_user_id=current_user_id, receiver_user_id=current_user_id,
+                                       document=document,
                                        type=Mention.MentionType.DOCUMENT)
         for mention in mentions:
             if mention.receiver_user_id not in at_user_list:
                 mention.delete()
 
         DocumentContent.objects.create(document=document, content=content)
-        document.modified_at = timezone.now
+        document.modified_at = timezone.now()
         document.save()
         return ResponseTemplate(Error.SUCCESS, 'save document successfully')
     except KeyError as keyError:

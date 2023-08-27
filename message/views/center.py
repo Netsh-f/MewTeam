@@ -100,7 +100,7 @@ def set_all_message_read_mention_deleted(request):
             mention.save()
         return ResponseTemplate(Error.SUCCESS, 'set all messages read mentions deleted successfully')
     except Exception as e:
-        return ResponseTemplate(Error.SUCCESS, str(e))
+        return ResponseTemplate(Error.FAILED, str(e))
 
 
 @api_view(['PUT'])
