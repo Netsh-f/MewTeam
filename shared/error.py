@@ -15,6 +15,7 @@ class Error:
     DATABASE_INTERNAL_ERROR = 1001
     DATA_NOT_FOUND = 1002
     PARAM_ILLEGAL = 1003
+    EXIST_ERROR = 1004
 
     # user modules
     NICKNAME_EXISTS = 10001

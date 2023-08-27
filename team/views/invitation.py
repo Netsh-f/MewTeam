@@ -47,12 +47,16 @@ def join_team_with_invitation(request):
             return ResponseTemplate(Error.INVALID_INVITATION_CODE, 'Invalid invitation code')
         user = User.objects.get(id=current_user_id)
         team = invitation.team
+        ship = UserTeamShip.objects.filter(user=user, team=team).first()
+        if ship is not None:
+            return ResponseTemplate(Error.EXIST_ERROR, 'you have joined this team')
         UserTeamShip.objects.create(user=user, team=team)
         return ResponseTemplate(Error.SUCCESS, 'join team successfully')
     except ObjectDoesNotExist as e:
         return ResponseTemplate(Error.DATABASE_INTERNAL_ERROR, str(e))
     except Exception as e:
         return ResponseTemplate(Error.FAILED, str(e))
+
 
 @api_view(['POST'])
 def join_team(request, team_id, user_id):
