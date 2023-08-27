@@ -28,7 +28,7 @@ def upload_message_file(request):
         mid = request.POST.get("mid")
         file = request.FILES.get('file')
         if file is None:
-            return ResponseTemplate(Error.FILE_MISSING, 'Missing image file')
+            return ResponseTemplate(Error.FILE_MISSING, 'Missing file')
         if file.size > settings.MAX_MESSAGE_FILE_SIZE:
             return ResponseTemplate(Error.FILE_SIZE_ILLEGAL, 'Size of file is too large. It should be less than 64mb.')
         filepath = f"{settings.MESSAGE_ROOT}/{mid}/{file.name}"
