@@ -13,8 +13,10 @@ urlpatterns = [
     path('teams/<int:team_id>/messages/', history.retrieve_message_by_date),
     path('mentions/', center.get_mentions),
     path('mentions/<int:mention_id>/read/', center.set_mention_checked),
-    path('mentions/all/read/', center.set_all_mention_checked),
+    path('mentions/messages/read/', center.set_all_message_mention_checked),
+    path('mentions/documents/read/', center.set_all_document_mention_checked),
     path('mentions/<int:mention_id>/delete/', center.set_mention_deleted),
-    path('mentions/read/delete/', center.set_all_read_mention_deleted),
+    path('mentions/messages/read/delete/', center.set_all_message_read_mention_deleted),
+    path('mentions/documents/read/delete/', center.set_all_document_read_mention_deleted),
     path('files/', chat.upload_message_file),
 ]

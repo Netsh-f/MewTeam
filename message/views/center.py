@@ -23,7 +23,7 @@ def get_mentions(request):
         return ResponseTemplate(Error.FAILED, str(e))
 
 
-@api_view(['PUT'])
+@api_view(['GET'])
 def set_mention_checked(request, mention_id):
     try:
         logging.getLogger('__name__').error(request.META.get('HTTP_AUTHORIZATION', ''))
@@ -42,15 +42,29 @@ def set_mention_checked(request, mention_id):
 
 
 @api_view(['PUT'])
-def set_all_mention_checked(request):
+def set_all_message_mention_checked(request):
     try:
-        logging.getLogger('__name__').error(request.META.get('HTTP_AUTHORIZATION', ''))
-        print(request.META.get('HTTP_AUTHORIZATION', ''))
         response, user_id = check_token(request)
         if user_id == -1:
             return response
         user = User.objects.get(id=user_id)
-        mentions = user.received_mention.all()
+        mentions = user.received_mention.filter(type=Mention.MentionType.MESSAGE).all()
+        for mention in mentions:
+            mention.checked = True
+            mention.save()
+        return ResponseTemplate(Error.SUCCESS, 'set all mentions checked successfully')
+    except Exception as e:
+        return ResponseTemplate(Error.SUCCESS, str(e))
+
+
+@api_view(['PUT'])
+def set_all_document_mention_checked(request):
+    try:
+        response, user_id = check_token(request)
+        if user_id == -1:
+            return response
+        user = User.objects.get(id=user_id)
+        mentions = user.received_mention.filter(type=Mention.MentionType.DOCUMENT).all()
         for mention in mentions:
             mention.checked = True
             mention.save()
@@ -76,16 +90,32 @@ def set_mention_deleted(request, mention_id):
 
 
 @api_view(['PUT'])
-def set_all_read_mention_deleted(request):
+def set_all_message_read_mention_deleted(request):
     try:
         response, user_id = check_token(request)
         if user_id == -1:
             return response
         user = User.objects.get(id=user_id)
-        mentions = user.received_mention.filter(checked=True).all()
+        mentions = user.received_mention.filter(type=Mention.MentionType.MESSAGE, checked=True).all()
         for mention in mentions:
             mention.receiver_deleted = True
             mention.save()
-        return ResponseTemplate(Error.SUCCESS, 'set all read mentions deleted successfully')
+        return ResponseTemplate(Error.SUCCESS, 'set all messages read mentions deleted successfully')
+    except Exception as e:
+        return ResponseTemplate(Error.SUCCESS, str(e))
+
+
+@api_view(['PUT'])
+def set_all_document_read_mention_deleted(request):
+    try:
+        response, user_id = check_token(request)
+        if user_id == -1:
+            return response
+        user = User.objects.get(id=user_id)
+        mentions = user.received_mention.filter(type=Mention.MentionType.DOCUMENT, checked=True).all()
+        for mention in mentions:
+            mention.receiver_deleted = True
+            mention.save()
+        return ResponseTemplate(Error.SUCCESS, 'set all documents read mentions deleted successfully')
     except Exception as e:
         return ResponseTemplate(Error.SUCCESS, str(e))
