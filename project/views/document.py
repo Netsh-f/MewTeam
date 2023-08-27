@@ -15,6 +15,7 @@ from message.models import Mention
 from project.models import Document, Project, DocumentContent
 from project.serializers import DocumentContentSerializer, DocumentContentSimpleSerializer, DocumentSerializer
 from shared.error import Error
+from shared.guest_token import check_guest_token
 from shared.permission import is_team_member
 from shared.res_temp import ResponseTemplate
 from shared.token import check_token
@@ -47,8 +48,11 @@ def create_document(request, pro_id):
 def save_document(request, document_id):
     try:
         response, current_user_id = check_token(request)
-        if current_user_id == -1:
+        data, guest_response = check_guest_token(request)
+        if current_user_id == -1 and data is None:
             return response
+        if not data['edit_permission']:
+            return ResponseTemplate(Error.PERMISSION_DENIED, 'you can not edit this document')
         document = Document.objects.get(id=document_id)
         if not is_team_member(current_user_id, document.project.team_id):
             return ResponseTemplate(Error.PERMISSION_DENIED, 'you are not one member of this team')
@@ -57,8 +61,8 @@ def save_document(request, document_id):
 
         mentions = document.mention_set.all()
         mentioned_list = mentions.values_list('receiver_user_id', flat=True)
-        for id in at_user_list:
-            if id not in mentioned_list:
+        for at_user_id in at_user_list:
+            if at_user_id not in mentioned_list:
                 Mention.objects.create(sender_user_id=current_user_id, receiver_user_id=id, document=document,
                                        type=Mention.MentionType.DOCUMENT)
         for mention in mentions:
@@ -82,7 +86,8 @@ def save_document(request, document_id):
 def get_latest_document(request, document_id):
     try:
         response, user_id = check_token(request)
-        if user_id == -1:
+        data, guest_response = check_guest_token(request)
+        if user_id == -1 and data is None:
             return response
         document = Document.objects.get(id=document_id)
         if not is_team_member(user_id, document.project.team_id):

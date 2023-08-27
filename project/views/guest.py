@@ -39,13 +39,9 @@ def generate_guest_token(request, document_id):
 @api_view(['GET'])
 def validate_guest_token(request):
     try:
-        edit_permission, document_id, expiration_date, response = check_guest_token(request)
-        if document_id == -1:
+        data, response = check_guest_token(request)
+        if data is None:
             return response
-        return ResponseTemplate(Error.SUCCESS, 'valid guest token', data={
-            'edit_permission': edit_permission,
-            'document_id': document_id,
-            'expiration_date': expiration_date,
-        })
+        return ResponseTemplate(Error.SUCCESS, 'valid guest token', data=data)
     except Exception as e:
         return ResponseTemplate(Error.FAILED, str(e))

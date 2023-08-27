@@ -61,11 +61,10 @@ def check_guest_token(request):
         token = request.META.get('HTTP_AUTHORIZATION', '')
         data = validate_and_parse_token(token)
         if data is None:
-            return False, -1, -1, ResponseTemplate(Error.TOKEN_INVALID, 'guest token is invalid')
-        return data['edit_permission'], data['document_id'], data['expiration_date'], ResponseTemplate(Error.SUCCESS,
-                                                                                                       'success')
+            return None, ResponseTemplate(Error.TOKEN_INVALID, 'guest token is invalid')
+        return data, None
     except Exception as e:
-        return False, -1, -1, ResponseTemplate(Error.TOKEN_INVALID, f'guest token is invalid {str(e)}')
+        return None, ResponseTemplate(Error.TOKEN_INVALID, f'guest token is invalid {str(e)}')
 
 # expiration_days = 7
 # document_id = 123
