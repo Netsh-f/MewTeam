@@ -7,12 +7,13 @@
 """
 
 from django.core.exceptions import ObjectDoesNotExist
+from django.utils import timezone
 from rest_framework import status
 from rest_framework.decorators import api_view
 
 from message.models import Mention
 from project.models import Document, Project, DocumentContent
-from project.serializers import DocumentContentSerializer, DocumentContentSimpleSerializer
+from project.serializers import DocumentContentSerializer, DocumentContentSimpleSerializer, DocumentSerializer
 from shared.error import Error
 from shared.permission import is_team_member
 from shared.res_temp import ResponseTemplate
@@ -65,6 +66,8 @@ def save_document(request, document_id):
                 mention.delete()
 
         DocumentContent.objects.create(document=document, content=content)
+        document.modified_at = timezone.now
+        document.save()
         return ResponseTemplate(Error.SUCCESS, 'save document successfully')
     except KeyError as keyError:
         return ResponseTemplate(Error.FAILED, 'Invalid or missing key. ' + str(keyError),
@@ -131,6 +134,21 @@ def get_document_content_by_id(request, document_content_id):
     except KeyError as keyError:
         return ResponseTemplate(Error.FAILED, 'Invalid or missing key. ' + str(keyError),
                                 status=status.HTTP_400_BAD_REQUEST)
+    except ObjectDoesNotExist as e:
+        return ResponseTemplate(Error.DATA_NOT_FOUND, str(e))
+    except Exception as e:
+        return ResponseTemplate(Error.FAILED, str(e))
+
+
+@api_view(['GET'])
+def get_documents_by_project_id(request, pro_id):
+    try:
+        response, user_id = check_token(request)
+        if user_id == -1:
+            return response
+        project = Project.objects.get(id=pro_id)
+        documents = project.document_set.all()
+        return ResponseTemplate(Error.SUCCESS, DocumentSerializer(documents, many=True).data)
     except ObjectDoesNotExist as e:
         return ResponseTemplate(Error.DATA_NOT_FOUND, str(e))
     except Exception as e:

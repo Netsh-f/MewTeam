@@ -14,6 +14,7 @@ urlpatterns = {
     path('teams/<int:team_id>/projects/<int:pro_id>/recover/', curd.recover_project, name="recover_project"),
     path('teams/<int:team_id>/list/', curd.list_project, name='list_project'),
     path('projects/<int:pro_id>/documents/', document.create_document),
+    path('projects/<int:pro_id>/documents/get/', document.get_documents_by_project_id),
     path('documents/<int:document_id>/', document.save_document),
     path('documents/<int:document_id>/latest/', document.get_latest_document),
     path('documents/<int:document_id>/history/', document.get_history_document_list),
