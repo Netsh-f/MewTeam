@@ -1,0 +1,6 @@
+新建：tmux new -s Django
+进入：tmux attach -t Django
+删除：tmux kill-session -t Django
+(或会话内ctrl+B后按X删除)
+分离：tmux detach
+(或会话内ctrl+B后按D分离）
