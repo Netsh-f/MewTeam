@@ -15,7 +15,13 @@ class Project(models.Model):
 
 
 class Document(models.Model):
+    name = models.CharField(max_length=63)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    create_at = models.DateTimeField(default=timezone.now)
+
+
+class DocumentContent(models.Model):
+    document = models.ForeignKey(Document, on_delete=models.CASCADE)
     content = models.JSONField()
     timestamp = models.DateTimeField(default=timezone.now)
 
