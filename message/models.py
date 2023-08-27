@@ -34,14 +34,6 @@ class Message(models.Model):
     checked = models.BooleanField(default=False)
     text = models.TextField(null=True)
     file = models.CharField(max_length=127, null=True)
-    #
-    # class Meta:
-    #     constraints = [
-    #         models.CheckConstraint(
-    #             check=models.Q(receiver_user__isnull=False) | models.Q(team__isnull=False),
-    #             name='receiver_user_xor_team'
-    #         )
-    #     ]
 
 
 class MessageFile(models.Model):

@@ -4,6 +4,7 @@ from rest_framework import status
 from shared.error import Error
 from shared.res_temp import ResponseTemplate
 from shared import token
+from team.models import Team
 from user.models import User
 
 '''
@@ -19,6 +20,7 @@ Response template:
     }
 }   
 '''
+
 
 @api_view(['POST'])
 def register(request):
@@ -40,8 +42,9 @@ def register(request):
             return ResponseTemplate(Error.NAME_EXISTS, '真实姓名已被注册')
 
         user = User.objects.create(nickname=nickname, email=email, name=name, password=data['password'])
+        Team.objects.create(name=f"{user.name}的团队")
         return ResponseTemplate(Error.SUCCESS, '用户注册成功！', status=status.HTTP_201_CREATED)
     except KeyError as keyError:
         return ResponseTemplate(Error.FAILED, '请求结构体非法', status=status.HTTP_400_BAD_REQUEST)
-    except Exception as exception:
-        return ResponseTemplate(Error.FAILED, '服务器异常', status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    except Exception as e:
+        return ResponseTemplate(Error.FAILED, str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)

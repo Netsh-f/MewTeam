@@ -32,10 +32,10 @@ def login(request):
         if user.password != password:
             return ResponseTemplate(Error.PASSWORD_NOT_CORRECT, '密码错误')
 
-        return ResponseTemplate(Error.SUCCESS, '登陆成功！',{
-                                    'token': token.generate_token(user.id),
-                                    'user': UserSerializer(user).data
-                                } )
+        return ResponseTemplate(Error.SUCCESS, '登陆成功！', {
+            'token': token.generate_token(user.id),
+            'user': UserSerializer(user).data
+        })
     except KeyError as keyError:
         return ResponseTemplate(Error.FAILED, '请求结构体非法', status=status.HTTP_400_BAD_REQUEST)
     except Exception as exception:
