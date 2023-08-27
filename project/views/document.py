@@ -153,3 +153,56 @@ def get_documents_by_project_id(request, pro_id):
         return ResponseTemplate(Error.DATA_NOT_FOUND, str(e))
     except Exception as e:
         return ResponseTemplate(Error.FAILED, str(e))
+
+
+@api_view(['PUT'])
+def delete_document(request, document_id):
+    try:
+        response, user_id = check_token(request)
+        if user_id == -1:
+            return response
+        document = Document.objects.get(id=document_id)
+        if not is_team_member(user_id, document.project.team_id):
+            return ResponseTemplate(Error.PERMISSION_DENIED, 'you are not one member of this team')
+        document.is_deleted = True
+        document.save()
+        return ResponseTemplate(Error.SUCCESS, 'delete document successfully')
+    except ObjectDoesNotExist as e:
+        return ResponseTemplate(Error.DATA_NOT_FOUND, str(e))
+    except Exception as e:
+        return ResponseTemplate(Error.FAILED, str(e))
+
+
+@api_view(['PUT'])
+def restore_document(request, document_id):
+    try:
+        response, user_id = check_token(request)
+        if user_id == -1:
+            return response
+        document = Document.objects.get(id=document_id)
+        if not is_team_member(user_id, document.project.team_id):
+            return ResponseTemplate(Error.PERMISSION_DENIED, 'you are not one member of this team')
+        document.is_deleted = False
+        document.save()
+        return ResponseTemplate(Error.SUCCESS, 'restore document successfully')
+    except ObjectDoesNotExist as e:
+        return ResponseTemplate(Error.DATA_NOT_FOUND, str(e))
+    except Exception as e:
+        return ResponseTemplate(Error.FAILED, str(e))
+
+
+@api_view(['DELETE'])
+def destroy_document(request, document_id):
+    try:
+        response, user_id = check_token(request)
+        if user_id == -1:
+            return response
+        document = Document.objects.get(id=document_id)
+        if not is_team_member(user_id, document.project.team_id):
+            return ResponseTemplate(Error.PERMISSION_DENIED, 'you are not one member of this team')
+        document.delete()
+        return ResponseTemplate(Error.SUCCESS, 'destroy document successfully')
+    except ObjectDoesNotExist as e:
+        return ResponseTemplate(Error.DATA_NOT_FOUND, str(e))
+    except Exception as e:
+        return ResponseTemplate(Error.FAILED, str(e))

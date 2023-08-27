@@ -5,7 +5,7 @@
 # @File    : urls.py
 #
 from django.urls import path
-from project.views import curd, document, prototype
+from project.views import curd, document, prototype, guest
 
 urlpatterns = {
     path('teams/<int:team_id>/create/', curd.create_project, name='create_project'),
@@ -21,4 +21,9 @@ urlpatterns = {
     path('documents/contents/<int:document_content_id>/', document.get_document_content_by_id),
     path('projects/<int:pro_id>/prototypes/', prototype.save_prototype),
     path('projects/<int:pro_id>/prototypes/latest/', prototype.get_latest_prototype),
+    path('documents/<int:document_id>/guests/tokens/', guest.generate_guest_token),
+    path('guests/tokens/validate/', guest.validate_guest_token),
+    path('documents/<int:document_id>/delete/', document.delete_document),
+    path('documents/<int:document_id>/restore/', document.restore_document),
+    path('documents/<int:document_id>/destroy/', document.destroy_document),
 }

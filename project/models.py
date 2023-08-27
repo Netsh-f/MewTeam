@@ -19,6 +19,7 @@ class Document(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     create_at = models.DateTimeField(default=timezone.now)
     modified_at = models.DateTimeField(default=timezone.now)
+    is_deleted = models.BooleanField(default=False)
 
 
 class DocumentContent(models.Model):

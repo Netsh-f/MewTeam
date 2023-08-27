@@ -5,23 +5,26 @@
 # @FileName: guest_token.py
 ===========================
 """
+import base64
 
 from cryptography.fernet import Fernet
 from datetime import datetime, timedelta
 
-SECRET_KEY = Fernet.generate_key()
+from MewTeam import settings
+from shared.error import Error
+from shared.res_temp import ResponseTemplate
 
-print(SECRET_KEY)
+GUEST_SECRET = base64.b64decode(settings.GUEST_SECRET)
 
 
 def encrypt_data(data):
-    fernet = Fernet(SECRET_KEY)
+    fernet = Fernet(GUEST_SECRET)
     encrypted_data = fernet.encrypt(data.encode())
     return encrypted_data
 
 
 def decrypt_data(encrypted_data):
-    fernet = Fernet(SECRET_KEY)
+    fernet = Fernet(GUEST_SECRET)
     decrypted_data = fernet.decrypt(encrypted_data).decode()
     return decrypted_data
 
@@ -53,16 +56,26 @@ def validate_and_parse_token(token):
         return None
 
 
-expiration_days = 7
-document_id = 123
-edit_permission = True
+def check_guest_token(request):
+    try:
+        token = request.META.get('HTTP_AUTHORIZATION', '')
+        data = validate_and_parse_token(token)
+        if data is None:
+            return False, -1, -1, ResponseTemplate(Error.TOKEN_INVALID, 'guest token is invalid')
+        return data['edit_permission'], data['document_id'], data['expiration_date'], ResponseTemplate(Error.SUCCESS,
+                                                                                                       'success')
+    except Exception as e:
+        return False, -1, -1, ResponseTemplate(Error.TOKEN_INVALID, f'guest token is invalid {str(e)}')
 
-token = generate_encrypted_token(document_id, edit_permission, expiration_days)
-print("Generated Token:", token)
-
-parsed_data = validate_and_parse_token(token)
-if parsed_data:
-    print("Valid Token:", parsed_data)
-else:
-    print("Invalid Token")
-
+# expiration_days = 7
+# document_id = 123
+# edit_permission = True
+#
+# token = generate_encrypted_token(document_id, edit_permission, expiration_days)
+# print("Generated Token:", token)
+#
+# parsed_data = validate_and_parse_token(token)
+# if parsed_data:
+#     print("Valid Token:", parsed_data)
+# else:
+#     print("Invalid Token")
