@@ -6,31 +6,34 @@ from team.models import Team
 from user.models import User
 
 
+class Session(models.Model):
+    users = models.ManyToManyField(User, related_name='sessions')
+    session_id = models.CharField(max_length=15, unique=True)
+
+
 class Message(models.Model):
     class MessageType(models.IntegerChoices):
         TEXT = 0, "Text"
         IMAGE = 1, "Image"
         FILE = 2, "FILE"
 
+    class RoomType(models.IntegerChoices):
+        GROUP = 0, "Group"
+        PRIVATE = 1, "Private"
+
     sender_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sent_messages')
     receiver_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='received_messages',
                                       null=True)  # 群聊时为空
     sender_deleted = models.BooleanField(default=False)
     receiver_deleted = models.BooleanField(default=False)
+    session = models.ForeignKey(Session, on_delete=models.CASCADE, null=True)
+    room_type = models.PositiveSmallIntegerField(choices=RoomType.choices, default=RoomType.GROUP)
     team = models.ForeignKey(Team, on_delete=models.CASCADE, null=True)  # 私聊时为空
     timestamp = models.DateTimeField(default=timezone.now)
     mtype = models.PositiveSmallIntegerField(choices=MessageType.choices, default=MessageType.TEXT)
     checked = models.BooleanField(default=False)
     text = models.TextField(null=True)
     file = models.CharField(max_length=127, null=True)
-
-    class Meta:
-        constraints = [
-            models.CheckConstraint(
-                check=models.Q(receiver_user__isnull=False) | models.Q(team__isnull=False),
-                name='receiver_user_xor_team'
-            )
-        ]
 
 
 class MessageFile(models.Model):

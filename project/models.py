@@ -12,6 +12,7 @@ class Project(models.Model):
     is_deleted = models.BooleanField(default=False)
     create_time = models.DateTimeField(default=timezone.now)
     delete_time = models.DateTimeField(null=True)
+    cover = models.CharField(max_length=127)
 
 
 class Document(models.Model):
@@ -24,7 +25,7 @@ class Document(models.Model):
 
 class DocumentContent(models.Model):
     document = models.ForeignKey(Document, on_delete=models.CASCADE)
-    content = models.JSONField()
+    content = models.TextField()
     timestamp = models.DateTimeField(default=timezone.now)
 
 

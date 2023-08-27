@@ -21,22 +21,25 @@ from shared.token import check_token
 
 @api_view(['POST'])
 def create_project(request, team_id):
-    response, user_id = check_token(request)
-    if user_id == -1:
-        return response
-    data = request.data
-    name = data['name']
-    if not _is_legal_identity(user_id, team_id):
-        return ResponseTemplate(Error.ILLEGAL_IDENTITY, '非法创建，请检查您的用户状态和团队信息')
+    try:
+        response, user_id = check_token(request)
+        if user_id == -1:
+            return response
+        data = request.data
+        name = data['name']
+        cover = data['cover']
+        if not _is_legal_identity(user_id, team_id):
+            return ResponseTemplate(Error.ILLEGAL_IDENTITY, '非法创建，请检查您的用户状态和团队信息')
 
-    project = Project.objects.filter(name=name).first()
-    if project:
-        return ResponseTemplate(Error.PRO_NAME_EXISTS, '项目名重复')
+        project = Project.objects.filter(name=name).first()
+        if project:
+            return ResponseTemplate(Error.PRO_NAME_EXISTS, '项目名重复')
 
-    new_project = Project(team_id=team_id, name=name)
-    print(new_project)
-    new_project.save()
-    return ResponseTemplate(Error.SUCCESS, '创建成功！', data=ProjectSerializer(new_project).data)
+        new_project = Project(team_id=team_id, name=name, cover=cover)
+        new_project.save()
+        return ResponseTemplate(Error.SUCCESS, '创建成功！', data=ProjectSerializer(new_project).data)
+    except Exception as e:
+        return ResponseTemplate(Error.FAILED, str(e))
 
 
 @api_view(['PUT'])
@@ -107,6 +110,7 @@ def list_project(request, team_id):
 
     return ResponseTemplate(Error.SUCCESS, '项目列表获取成功!', data=ProjectSerializer(projects, many=True).data)
 
+
 @api_view(['DELETE'])
 def destroy_project(request, team_id, pro_id):
     response, user_id = check_token(request)
@@ -120,6 +124,7 @@ def destroy_project(request, team_id, pro_id):
         return ResponseTemplate(Error.PRO_NOT_FOUND, '项目不存在')
     project.delete()
     return ResponseTemplate(Error.SUCCESS, '清空成功！')
+
 
 @api_view(['DELETE'])
 def destroy_all_project(request, team_id):
