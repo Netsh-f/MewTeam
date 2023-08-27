@@ -18,7 +18,11 @@ class MessageSerializer(serializers.ModelSerializer):
 class MentionSerializer(serializers.ModelSerializer):
     message = MessageSerializer()
     sender_user = UserSerializer()
+    text = serializers.SerializerMethodField()
 
     class Meta:
         model = Mention
         fields = '__all__'
+
+    def get_text(self, obj):
+        return obj.text

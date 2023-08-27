@@ -58,7 +58,8 @@ def save_document(request, document_id):
         mentioned_list = mentions.values_list('receiver_user_id', flat=True)
         for id in at_user_list:
             if id not in mentioned_list:
-                Mention.objects.create(sender_user_id=current_user_id, receiver_user_id=id, document=document)
+                Mention.objects.create(sender_user_id=current_user_id, receiver_user_id=id, document=document,
+                                       type=Mention.MentionType.DOCUMENT)
         for mention in mentions:
             if mention.receiver_user_id not in at_user_list:
                 mention.delete()

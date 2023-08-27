@@ -39,6 +39,20 @@ class MessageFile(models.Model):
 
 
 class Mention(models.Model):
+    class MentionType(models.IntegerChoices):
+        MESSAGE = 0, "Message"
+        DOCUMENT = 1, "Document"
+
+    type = models.PositiveSmallIntegerField(choices=MentionType.choices, default=MentionType.MESSAGE)
+
+    @property
+    def text(self):
+        if self.type == self.MentionType.MESSAGE:
+            return self.message.text if self.message else ""
+        elif self.type == self.MentionType.DOCUMENT:
+            return self.document.name if self.document else ""
+        return ""
+
     sender_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sent_mention')
     receiver_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='received_mention')
     sender_deleted = models.BooleanField(default=False)
