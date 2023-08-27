@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from message.models import Message, Mention
+from message.models import Message, Mention, Session
 from team.serializers import TeamSerializer
 from user.serializers import UserSerializer
 
@@ -26,3 +26,9 @@ class MentionSerializer(serializers.ModelSerializer):
 
     def get_text(self, obj):
         return obj.text
+
+
+class SessionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Session
+        fields = '__all__'

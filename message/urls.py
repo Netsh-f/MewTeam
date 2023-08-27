@@ -19,4 +19,6 @@ urlpatterns = [
     path('mentions/messages/read/delete/', center.set_all_message_read_mention_deleted),
     path('mentions/documents/read/delete/', center.set_all_document_read_mention_deleted),
     path('files/', chat.upload_message_file),
+    path('sessions/', chat.get_session_id),
+    path('sessions/messages/history/', chat.get_private_chat_history_messages),
 ]

@@ -6,7 +6,7 @@ from channels.generic.websocket import WebsocketConsumer
 from asgiref.sync import async_to_sync
 
 from MewTeam import settings
-from message.models import Message, Mention
+from message.models import Message, Mention, Session
 from message.serializers import MessageSerializer
 from shared.token import verify_token, get_identity_from_token
 
@@ -32,7 +32,7 @@ class ChatConsumer(WebsocketConsumer):
 
             self.user_id = get_identity_from_token(token)
             self.room_name = self.scope["url_route"]["kwargs"]["team_id"]
-            self.team_id = int(self.room_name)
+            self.team_id = self.room_name
             self.room_group_name = f"chat_{self.room_name}"
 
             async_to_sync(self.channel_layer.group_add)(
@@ -57,14 +57,26 @@ class ChatConsumer(WebsocketConsumer):
             filename = text_data.get("filename", None)
             text = text_data.get("text", None)
             mention_user_id_list = text_data.get('mention_user_id_list', None)
+            room_type = text_data.get('room_type', Message.RoomType.GROUP)
             if mtype == Message.MessageType.TEXT:
-                message = Message.objects.create(sender_user_id=self.user_id, team_id=self.team_id, text=text,
-                                                 mtype=mtype)
+                message = Message.objects.create(sender_user_id=self.user_id, text=text, mtype=mtype)
             elif mtype in [Message.MessageType.IMAGE, Message.MessageType.FILE]:
-                message = Message.objects.create(sender_user_id=self.user_id, team_id=self.team_id, mtype=mtype,
+                message = Message.objects.create(sender_user_id=self.user_id, mtype=mtype,
                                                  file=f"{settings.MESSAGE_ROOT}{mid}/{filename}")
             else:
                 return
+
+            if room_type == Message.RoomType.GROUP:
+                message.team_id = self.team_id
+                message.save()
+            elif room_type == Message.RoomType.PRIVATE:
+                session = Session.objects.filter(session_id=self.team_id).first()
+                message.session = session
+                message.receiver_user = session.users.exclude(id=self.user_id).first()
+                message.save()
+            else:
+                return
+
             if mention_user_id_list is not None:
                 for user_id in mention_user_id_list:
                     Mention.objects.create(sender_user_id=self.user_id, receiver_user_id=user_id, message=message)
