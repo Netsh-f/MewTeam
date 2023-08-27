@@ -1,3 +1,5 @@
+import logging
+
 from rest_framework.decorators import api_view
 
 from message.models import Mention
@@ -40,6 +42,8 @@ def set_mention_checked(request, mention_id):
 @api_view(['PUT'])
 def set_all_mention_checked(request):
     try:
+        logging.getLogger('__name__').error(request.META.get('HTTP_AUTHORIZATION', ''))
+        print(request.META.get('HTTP_AUTHORIZATION', ''))
         response, user_id = check_token(request)
         if user_id == -1:
             return response
@@ -83,4 +87,3 @@ def set_all_read_mention_deleted(request):
         return ResponseTemplate(Error.SUCCESS, 'set all read mentions deleted successfully')
     except Exception as e:
         return ResponseTemplate(Error.SUCCESS, str(e))
-
