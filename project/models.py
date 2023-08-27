@@ -25,7 +25,7 @@ class Document(models.Model):
 
 class DocumentContent(models.Model):
     document = models.ForeignKey(Document, on_delete=models.CASCADE)
-    content = models.JSONField()
+    content = models.TextField()
     timestamp = models.DateTimeField(default=timezone.now)
 
 
