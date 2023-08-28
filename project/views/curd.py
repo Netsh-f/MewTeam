@@ -116,6 +116,7 @@ def list_project(request, team_id):
 
 @api_view(['DELETE'])
 def destroy_project(request, team_id, pro_id):
+
     response, user_id = check_token(request)
     if user_id == -1:
         return response
