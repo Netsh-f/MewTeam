@@ -36,11 +36,6 @@ class Message(models.Model):
     file = models.CharField(max_length=127, null=True)
 
 
-class MessageFile(models.Model):
-    mid = models.CharField(max_length=36, unique=True)
-    filepath = models.CharField(max_length=127)
-
-
 class Mention(models.Model):
     class MentionType(models.IntegerChoices):
         MESSAGE = 0, "Message"

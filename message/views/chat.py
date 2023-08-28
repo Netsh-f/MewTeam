@@ -10,7 +10,7 @@ import os
 from rest_framework.decorators import api_view
 
 from MewTeam import settings
-from message.models import MessageFile, Session
+from message.models import Session
 from message.serializers import SessionSerializer, MessageSerializer
 from shared.error import Error
 from shared.random import generate_session_id
