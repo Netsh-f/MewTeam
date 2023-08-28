@@ -62,7 +62,7 @@ class ChatConsumer(WebsocketConsumer):
                 message = Message.objects.create(sender_user_id=self.user_id, text=text, mtype=mtype)
             elif mtype in [Message.MessageType.IMAGE, Message.MessageType.FILE]:
                 message = Message.objects.create(sender_user_id=self.user_id, mtype=mtype,
-                                                 file=f"{settings.MESSAGE_ROOT}{mid}/{filename}")
+                                                 file=f"{settings.MESSAGE_FILE_URL}{mid}/{filename}")
             else:
                 return
 
