@@ -17,7 +17,7 @@ class Project(models.Model):
 class DocumentDir(models.Model):
     name = models.CharField(max_length=63)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
-    par_dir = models.ForeignKey('self', on_delete=models.CASCADE)
+    par_dir = models.ForeignKey('self', on_delete=models.CASCADE, null=True)
 
 class Document(models.Model):
     name = models.CharField(max_length=63)

@@ -4,12 +4,11 @@
 # @Author  : Lynx
 # @File    : doc_manage.py
 #
-from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import status
 from rest_framework.decorators import api_view
 
 from project.models import Project, Document, DocumentContent, DocumentDir
-from project.serializers import DocumentSerializer
+from project.serializers import DocumentSerializer, DocumentDirSerializer
 from project.views.utils._doc_manage import _init_doc_struction
 from shared.error import Error
 from shared.permission import is_team_member
@@ -34,7 +33,7 @@ def create_document(request, pro_id):
             return ResponseTemplate(Error.DOC_STRUCT_NOT_INIT, 'Project structure not initialized')
 
         root_dir = root_dir.first()
-        if dir_name == root_dir.name:
+        if dir_name == 'root':
             document = Document.objects.create(project=project, name=name, par_dir=root_dir)
         else:
             sub_dir = DocumentDir.objects.filter(name=name, par_dir=root_dir)
@@ -58,25 +57,24 @@ def get_documents(request, pro_id):
         if user_id == -1:
             return response
         project = Project.objects.get(id=pro_id)
+
         if not is_team_member(user_id, project.team_id):
             return ResponseTemplate(Error.PERMISSION_DENIED, 'you are not one member of this team')
 
         _init_doc_struction(project)
         root_dir = DocumentDir.objects.get(name=f'root_{project.id}')
         sub_dirs = DocumentDir.objects.filter(par_dir=root_dir)
-
-        sub_dir_list = []
+        sub_data = []
         for sub_dir in sub_dirs:
-            sub_dir_list.append({
+            sub_data.append({
                 'name': sub_dir.name,
-                'projects': DocumentSerializer(Document.objects.filter(par_dir=sub_dir)).data
+                'projects': DocumentSerializer(Document.objects.filter(par_dir=sub_dir), many=True).data
             })
-        data = DocumentSerializer(Document.objects.filter(par_dir=root_dir)).data.append(sub_dir_list)
-        # documents = project.document_set.all()
-        # return ResponseTemplate(Error.SUCCESS, DocumentSerializer(documents, many=True).data)
-        return ResponseTemplate(Error.SUCCESS, 'Query Successful', data=data)
-    except ObjectDoesNotExist as e:
-        return ResponseTemplate(Error.DATA_NOT_FOUND, str(e))
+        root_data = DocumentSerializer(Document.objects.filter(par_dir=root_dir), many=True).data
+        print(sub_data+root_data)
+        return ResponseTemplate(Error.SUCCESS, 'Query Successful', data=sub_data+root_data)
+    except Project.DoesNotExist:
+        return ResponseTemplate(Error.DATA_NOT_FOUND, 'project not found')
     except Exception as e:
         return ResponseTemplate(Error.FAILED, str(e))
 
@@ -92,11 +90,13 @@ def create_dir(request, pro_id):
 
         dir_name = request.data['dir_name']
         doc_dirs = DocumentDir.objects.filter(project=project)
-        if not doc_dirs.filter(name=f'root_{pro_id}').exists():
+        root_dir = doc_dirs.filter(name=f'root_{pro_id}')
+        if not root_dir.exists():
             return ResponseTemplate(Error.DOC_STRUCT_NOT_INIT, 'Project structure not initialized')
         if doc_dirs.filter(name=dir_name).exists():
             return ResponseTemplate(Error.DOC_DIR_EXISTS, 'Directory name already exists')
-        DocumentDir.objects.create(project=project, name=dir_name)
+        DocumentDir.objects.create(project=project, name=dir_name, par_dir=root_dir.first())
+        return ResponseTemplate(Error.SUCCESS, 'Create directory successfully!')
     except KeyError as keyError:
         return ResponseTemplate(Error.FAILED, 'Invalid or missing key. ' + str(keyError),
                                 status=status.HTTP_400_BAD_REQUEST)

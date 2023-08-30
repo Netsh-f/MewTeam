@@ -8,10 +8,12 @@ class ProjectSerializer(serializers.ModelSerializer):
         model = Project
         fields = '__all__'
 
-# class DocumentDirSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = DocumentDir
-#         fields = ['name']
+class DocumentDirSerializer(serializers.ModelSerializer):
+    project = ProjectSerializer()
+
+    class Meta:
+        model = DocumentDir
+        fields = ['name', 'project']
 
     # def to_representation(self, instance):
 class DocumentSerializer(serializers.ModelSerializer):

@@ -7,12 +7,15 @@
 from django.core.exceptions import ObjectDoesNotExist
 
 from project.models import Project, DocumentDir
+from project.serializers import ProjectSerializer
 
 
 def _init_doc_struction(project: Project):
     try:
         if not DocumentDir.objects.filter(name=f'root_{project.id}').exists():
             DocumentDir.objects.create(name=f'root_{project.id}', project=project)
-    except:
+
+    except Exception as e:
+        print(str(e))
         raise ObjectDoesNotExist
 
