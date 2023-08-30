@@ -5,7 +5,7 @@
 # @File    : urls.py
 #
 from django.urls import path
-from project.views import curd, document, prototype, guest
+from project.views import curd, document, prototype, guest, doc_manage
 
 urlpatterns = {
     path('teams/<int:team_id>/create/', curd.create_project, name='create_project'),

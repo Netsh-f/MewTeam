@@ -20,7 +20,7 @@ from shared.permission import is_team_member
 from shared.res_temp import ResponseTemplate
 from shared.token import check_token
 
-
+# TODO:create_dec must be optimized
 @api_view(['POST'])
 def create_document(request, pro_id):
     try:
@@ -153,6 +153,7 @@ def get_documents_by_project_id(request, pro_id):
         if user_id == -1:
             return response
         project = Project.objects.get(id=pro_id)
+        print('enter here')
         documents = project.document_set.all()
         return ResponseTemplate(Error.SUCCESS, DocumentSerializer(documents, many=True).data)
     except ObjectDoesNotExist as e:
