@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from project.models import Project, Prototype, Document, DocumentContent, DocumentDir
+from project.models import Project, Prototype, Document, DocumentContent, DocumentDir, PrototypeContent
 
 
 class ProjectSerializer(serializers.ModelSerializer):
@@ -35,4 +35,9 @@ class DocumentContentSimpleSerializer(serializers.ModelSerializer):
 class PrototypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Prototype
+        fields = "__all__"
+
+class PrototypeContentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PrototypeContent
         fields = "__all__"

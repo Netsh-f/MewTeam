@@ -2,7 +2,7 @@
 #
 # @Time    : 2023/8/25 16:29
 # @Author  : Lynx
-# @File    : curd.py
+# @File    : pro_manage.py
 #
 from datetime import timedelta, datetime
 

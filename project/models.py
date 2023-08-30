@@ -37,5 +37,13 @@ class DocumentContent(models.Model):
 
 class Prototype(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
-    content = models.JSONField()
-    timestamp = models.DateTimeField(default=timezone.now)
+    name = models.CharField(max_length=63)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    # content = models.JSONField()
+    # timestamp = models.DateTimeField(default=timezone.now)
+
+class PrototypeContent(models.Model):
+    content = models.JSONField(null=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    prototype = models.ForeignKey(Prototype, on_delete=models.CASCADE)
+

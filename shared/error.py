@@ -52,3 +52,6 @@ class Error:
     DOC_STRUCT_NOT_INIT = 60002
     DOC_DIR_NOT_EXISTS = 60003
 
+    # prototype modules
+    PTT_EXISTS = 70001
+    PTT_NOT_EXISTS = 70002
