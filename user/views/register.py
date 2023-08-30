@@ -43,7 +43,11 @@ def register(request):
 
         user = User.objects.create(nickname=nickname, email=email, name=name, password=data['password'])
         Team.objects.create(name=f"{user.name}的团队")
-        return ResponseTemplate(Error.SUCCESS, '用户注册成功！', status=status.HTTP_201_CREATED)
+        data = {
+            'user_id': user.id,
+            'token': token.generate_token(user.id)
+        }
+        return ResponseTemplate(Error.SUCCESS, '用户注册成功！', status=status.HTTP_201_CREATED, data=data)
     except KeyError as keyError:
         return ResponseTemplate(Error.FAILED, '请求结构体非法', status=status.HTTP_400_BAD_REQUEST)
     except Exception as e:

@@ -8,7 +8,7 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 
 from project.models import Project, Document, DocumentContent, DocumentDir
-from project.serializers import DocumentSerializer, DocumentDirSerializer
+from project.serializers import DocumentSerializer
 from project.views.utils._doc_manage import _init_doc_struction
 from shared.error import Error
 from shared.permission import is_team_member
@@ -35,10 +35,13 @@ def create_document(request, pro_id):
         root_dir = root_dir.first()
         if dir_name == 'root':
             document = Document.objects.create(project=project, name=name, par_dir=root_dir)
+
         else:
-            sub_dir = DocumentDir.objects.filter(name=name, par_dir=root_dir)
+            sub_dir = DocumentDir.objects.filter(name=dir_name, par_dir=root_dir)
             if not sub_dir.exists():
                 return ResponseTemplate(Error.DOC_DIR_NOT_EXISTS, 'Document subdirectory does not exist')
+            if Document.objects.filter(project=project, name=name, par_dir=sub_dir.first()).exists():
+                return ResponseTemplate()
             document = Document.objects.create(project=project, name=name, par_dir=sub_dir.first())
         DocumentContent.objects.create(document=document, content=content)  # content is json format
         return ResponseTemplate(Error.SUCCESS, 'create new document successfully')
@@ -62,17 +65,21 @@ def get_documents(request, pro_id):
             return ResponseTemplate(Error.PERMISSION_DENIED, 'you are not one member of this team')
 
         _init_doc_struction(project)
-        root_dir = DocumentDir.objects.get(name=f'root_{project.id}')
-        sub_dirs = DocumentDir.objects.filter(par_dir=root_dir)
-        sub_data = []
-        for sub_dir in sub_dirs:
-            sub_data.append({
-                'name': sub_dir.name,
-                'projects': DocumentSerializer(Document.objects.filter(par_dir=sub_dir), many=True).data
-            })
-        root_data = DocumentSerializer(Document.objects.filter(par_dir=root_dir), many=True).data
-        print(sub_data+root_data)
-        return ResponseTemplate(Error.SUCCESS, 'Query Successful', data=sub_data+root_data)
+        projects = Document.objects.filter(project=project)
+        return ResponseTemplate(Error.SUCCESS, 'Query Successful',
+                                data=DocumentSerializer(projects, many=True).data)
+
+        # root_dir = DocumentDir.objects.get(name=f'root_{project.id}')
+        # sub_dirs = DocumentDir.objects.filter(par_dir=root_dir)
+        # sub_data = []
+        # for sub_dir in sub_dirs:
+        #     sub_data.append({
+        #         'name': sub_dir.name,
+        #         'is_folder': True,
+        #         'projects': DocumentSerializer(Document.objects.filter(par_dir=sub_dir), many=True).data
+        #     })
+        # root_data = DocumentSerializer(Document.objects.filter(par_dir=root_dir), many=True).data
+        # return ResponseTemplate(Error.SUCCESS, 'Query Successful', data=sub_data+root_data)
     except Project.DoesNotExist:
         return ResponseTemplate(Error.DATA_NOT_FOUND, 'project not found')
     except Exception as e:

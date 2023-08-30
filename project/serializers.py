@@ -8,19 +8,17 @@ class ProjectSerializer(serializers.ModelSerializer):
         model = Project
         fields = '__all__'
 
-class DocumentDirSerializer(serializers.ModelSerializer):
-    project = ProjectSerializer()
+class CustomParDirField(serializers.StringRelatedField):
+    def to_representation(self, value):
+        if value.par_dir is None:  # 根据你的条件判断
+            return "root"
+        return value.name
 
-    class Meta:
-        model = DocumentDir
-        fields = ['name', 'project']
-
-    # def to_representation(self, instance):
 class DocumentSerializer(serializers.ModelSerializer):
+    par_dir = CustomParDirField()
     class Meta:
         model = Document
         fields = '__all__'
-
 
 class DocumentContentSerializer(serializers.ModelSerializer):
     class Meta:
