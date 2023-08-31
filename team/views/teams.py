@@ -23,7 +23,9 @@ def create_team(request):
         with transaction.atomic():
             new_team = Team.objects.create(name=name)
             UserTeamShip.objects.create(user_id=user_id, team=new_team, identify=UserTeamShip.Identify.CREATOR)
+
             create_room(user_id=user_id, name=name, room_type=Room.RoomType.TEAM, team=new_team)
+
             return ResponseTemplate(Error.SUCCESS, 'Team created successfully!', data={'team_id': new_team.id})
     except Exception as e:
         return ResponseTemplate(Error.DATABASE_INTERNAL_ERROR, str(e) + "user_id=" + str(user_id))
