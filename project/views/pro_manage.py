@@ -6,18 +6,16 @@
 #
 from datetime import timedelta, datetime
 
-from django.db.models import Q
 from rest_framework.decorators import api_view
 
-from project.models import Project
+from project.models import Project, Prototype, Document, PrototypeContent, DocumentDir
 from project.serializers import ProjectSerializer
+from project.views.utils._doc_manage import _init_doc_struction
 from project.views.utils.safety_check import _is_legal_identity
 from shared.error import Error
 from shared.res_temp import ResponseTemplate
 from shared.token import check_token
 
-
-# Create your views here.
 
 @api_view(['POST'])
 def create_project(request, team_id):
@@ -43,15 +41,13 @@ def create_project(request, team_id):
 
 
 @api_view(['PUT'])
-def update_project(request, team_id, pro_id):
+def update_project(request, pro_id):
     try:
         response, user_id = check_token(request)
         if user_id == -1:
             return response
         data = request.data
         name = data['name']
-        if not _is_legal_identity(user_id, team_id):
-            return ResponseTemplate(Error.ILLEGAL_IDENTITY, '非法更改，请检查您的用户状态和团队信息')
 
         project = Project.objects.filter(id=pro_id, is_deleted=False).first()
         if project == None:
@@ -67,13 +63,11 @@ def update_project(request, team_id, pro_id):
 
 
 @api_view(['DELETE'])
-def delete_project(request, team_id, pro_id):
+def delete_project(request, pro_id):
     try:
         response, user_id = check_token(request)
         if user_id == -1:
             return response
-        if not _is_legal_identity(user_id, team_id):
-            return ResponseTemplate(Error.ILLEGAL_IDENTITY, '非法删除，请检查您的用户状态和团队信息')
 
         project = Project.objects.filter(id=pro_id, is_deleted=False).first()
         if project == None:
@@ -87,13 +81,11 @@ def delete_project(request, team_id, pro_id):
 
 
 @api_view(['POST'])
-def recover_project(request, team_id, pro_id):
+def recover_project(request, pro_id):
     try:
         response, user_id = check_token(request)
         if user_id == -1:
             return response
-        if not _is_legal_identity(user_id, team_id):
-            return ResponseTemplate(Error.ILLEGAL_IDENTITY, '非法恢复，请检查您的用户状态和团队信息')
 
         project = Project.objects.filter(id=pro_id, is_deleted=True).first()
         if project == None:
@@ -124,13 +116,11 @@ def list_project(request, team_id):
 
 
 @api_view(['DELETE'])
-def destroy_project(request, team_id, pro_id):
+def destroy_project(request, pro_id):
     try:
         response, user_id = check_token(request)
         if user_id == -1:
             return response
-        if not _is_legal_identity(user_id, team_id):
-            return ResponseTemplate(Error.ILLEGAL_IDENTITY, '非法清空，请检查您的用户状态和团队信息')
 
         project = Project.objects.filter(id=pro_id, is_deleted=True).first()
         if project == None:
@@ -163,10 +153,61 @@ def search_project(request, team_id):
         if not _is_legal_identity(user_id, team_id):
             return ResponseTemplate(Error.ILLEGAL_IDENTITY, '非法搜索，请检查您的用户状态和团队信息')
 
-        name = request.data
+        name = request.data['name']
+        projects = Project.objects.filter(team_id=team_id, is_deleted=False, name__icontains=name)
+        return ResponseTemplate(Error.SUCCESS, 'Searching success!',
+                                ProjectSerializer(projects, many=True).data)
 
     except KeyError as keyError:
         return ResponseTemplate(Error.FAILED, 'Invalid or missing key')
 
+    except Exception as e:
+        return ResponseTemplate(Error.FAILED, str(e))
+
+def copy_project(request, pro_id):
+    try:
+        response, user_id = check_token(request)
+        if user_id == -1:
+            return response
+
+        project = Project.objects.get(id=pro_id)
+        existing_copies = Project.objects.filter(team_id=project.team_id,
+                                                 name__startswith=f'{project.name}_副本')
+        existing_copy_numbers = [int(name.split('_副本')[-1]) for name in
+                                 existing_copies.values_list('name', flat=True)]
+        next_copy_number = max(existing_copy_numbers, default=0) + 1
+        new_copy_name = f'{project.name}_副本{next_copy_number}'
+        pro_copy = Project.objects.create(name=new_copy_name, cover=project.cover)
+
+        # ptt copy
+        ptts = Prototype.objects.filter(project=project)
+        for ptt in ptts:
+            ptt_copy = Prototype.objects.create(name=ptt.name, project=pro_copy)
+            pttcont = PrototypeContent.objects.filter(prototype=ptt).\
+                order_by('-timestamp').first()
+            PrototypeContent.objects.create(content=pttcont.content, prototype=ptt_copy)
+
+        # doc copy
+        root_dir = DocumentDir.objects.filter(project=project, par_dir=None).first()
+        if root_dir == None:
+            return ResponseTemplate(Error.SUCCESS, 'Project is copied successfully!',
+                                    data=ProjectSerializer(pro_copy).data)
+        root_dir_copy = _init_doc_struction(pro_copy)
+
+        root_docs = Document.objects.filter(par_dir=root_dir, is_deleted=False)
+        for root_doc in root_docs:
+            root_doc_copy = Document.objects.create(name=root_doc.name, par_dir=root_dir_copy, project=pro_copy)
+
+        sub_dirs = DocumentDir.objects.filter(project=project).exclude(par_dir=None)
+        for sub_dir in sub_dirs:
+            sub_dir_copy = DocumentDir.objects.create(name=sub_dir.name, par_dir=root_dir_copy, project=pro_copy)
+            sub_docs = Document.objects.filter(par_dir=sub_dir, is_deleted=False)
+            for sub_doc in sub_docs:
+                sub_doc_copy = Document.objects.create(name=sub_doc.name, par_dir=sub_dir_copy, project=pro_copy)
+
+        return ResponseTemplate(Error.SUCCESS, 'Project copy success',
+                                data=ProjectSerializer(pro_copy).data)
+    except Project.DoesNotExist:
+        ResponseTemplate(Error.PRO_NOT_FOUND, 'Project is copied successfully!')
     except Exception as e:
         return ResponseTemplate(Error.FAILED, str(e))

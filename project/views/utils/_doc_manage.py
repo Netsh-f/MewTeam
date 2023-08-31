@@ -13,9 +13,8 @@ from project.serializers import ProjectSerializer
 def _init_doc_struction(project: Project):
     try:
         if not DocumentDir.objects.filter(name=f'root_{project.id}').exists():
-            DocumentDir.objects.create(name=f'root_{project.id}', project=project)
+            return DocumentDir.objects.create(name=f'root_{project.id}', project=project)
 
     except Exception as e:
-        print(str(e))
         raise ObjectDoesNotExist
 
