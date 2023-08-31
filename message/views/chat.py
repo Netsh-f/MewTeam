@@ -17,6 +17,7 @@ from shared.error import Error
 from shared.random import generate_session_id
 from shared.res_temp import ResponseTemplate
 from shared.token import check_token
+from team.models import Team
 from user.models import User
 from user.serializers import UserSerializer
 from datetime import datetime, timedelta
@@ -92,13 +93,14 @@ def get_private_chat_history(request, session_id):
 
 
 @api_view(['POST'])
-def create_group(request):
+def create_group(request, team_id):
     try:
         response, user_id = check_token(request)
         if user_id == -1:
             return response
         name = request.data['name']
-        create_room(user_id=user_id, name=name, room_type=Room.RoomType.GROUP)
+        team = Team.objects.get(id=team_id)
+        create_room(user_id=user_id, name=name, room_type=Room.RoomType.GROUP, team=team)
         return ResponseTemplate(Error.SUCCESS, 'create room successfully')
     except Exception as e:
         return ResponseTemplate(Error.FAILED, str(e))
