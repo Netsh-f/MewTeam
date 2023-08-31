@@ -110,6 +110,24 @@ def create_group(request, team_id):
         return ResponseTemplate(Error.FAILED, str(e))
 
 
+@api_view(['POST'])
+def create_private_room(request, team_id):
+    try:
+        response, current_user_id = check_token(request)
+        if current_user_id == -1:
+            return response
+        user_id = request.data['user_id']
+        user1 = User.objects.get(id=current_user_id)
+        user2 = User.objects.get(id=user_id)
+        room = Room.objects.create(roomName=f"{user1.name}和{user2.name}的会话", type=Room.RoomType.PRIVATE,
+                                   team_id=team_id)
+        UserRoomShip.objects.create(room=room, user=user1, identify=UserRoomShip.Identify.NORMAL)
+        UserRoomShip.objects.create(room=room, user=user2, identify=UserRoomShip.Identify.NORMAL)
+        return ResponseTemplate(Error.SUCCESS, 'success create private room')
+    except Exception as e:
+        return ResponseTemplate(Error.FAILED, str(e))
+
+
 @api_view(['GET'])
 def get_room_list(request, team_id):
     try:
