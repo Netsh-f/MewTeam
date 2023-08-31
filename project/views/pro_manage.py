@@ -145,8 +145,10 @@ def destroy_all_project(request, team_id):
     except Exception as e:
         return ResponseTemplate(Error.FAILED, str(e))
 
+@api_view(['GET'])
 def search_project(request, team_id):
     try:
+        print('------step here')
         response, user_id = check_token(request)
         if user_id == -1:
             return response
@@ -164,20 +166,22 @@ def search_project(request, team_id):
     except Exception as e:
         return ResponseTemplate(Error.FAILED, str(e))
 
+@api_view(['POST'])
 def copy_project(request, pro_id):
     try:
+        print('-------step here-------')
         response, user_id = check_token(request)
         if user_id == -1:
             return response
 
-        project = Project.objects.get(id=pro_id)
+        project = Project.objects.get(id=pro_id, is_deleted=False)
         existing_copies = Project.objects.filter(team_id=project.team_id,
                                                  name__startswith=f'{project.name}_副本')
         existing_copy_numbers = [int(name.split('_副本')[-1]) for name in
                                  existing_copies.values_list('name', flat=True)]
         next_copy_number = max(existing_copy_numbers, default=0) + 1
         new_copy_name = f'{project.name}_副本{next_copy_number}'
-        pro_copy = Project.objects.create(name=new_copy_name, cover=project.cover)
+        pro_copy = Project.objects.create(name=new_copy_name, cover=project.cover, team_id=project.team_id)
 
         # ptt copy
         ptts = Prototype.objects.filter(project=project)
