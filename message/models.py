@@ -6,34 +6,45 @@ from team.models import Team
 from user.models import User
 
 
-class Session(models.Model):
-    users = models.ManyToManyField(User, related_name='sessions')
-    session_id = models.CharField(max_length=15, unique=True)
+class Room(models.Model):
+    class RoomType(models.IntegerChoices):
+        TEAM = 0, "Team"
+        GROUP = 1, "Group"
+        PRIVATE = 2, "Private"
+
+    roomName = models.CharField(max_length=63)
+    type = models.PositiveSmallIntegerField(choices=RoomType.choices, default=RoomType.TEAM)
+    avatar = models.CharField(max_length=127, default='assets/images/people.png')
+
+    team = models.ForeignKey(Team, on_delete=models.CASCADE, null=True)
+
+
+class UserRoomShip(models.Model):
+    class Identify(models.IntegerChoices):
+        NORMAL = 0, "Normal"
+        ADMIN = 1, "Admin"
+        CREATOR = 2, "Creator"
+
+    identify = models.PositiveSmallIntegerField(choices=Identify.choices, default=Identify.NORMAL)
+    room = models.ForeignKey(Room, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
 
 
 class Message(models.Model):
-    class MessageType(models.IntegerChoices):
-        TEXT = 0, "Text"
-        IMAGE = 1, "Image"
-        FILE = 2, "FILE"
-
-    class RoomType(models.IntegerChoices):
-        GROUP = 0, "Group"
-        PRIVATE = 1, "Private"
-
+    content = models.TextField(null=True)
     sender_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sent_messages')
-    receiver_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='received_messages',
-                                      null=True)  # 群聊时为空
-    sender_deleted = models.BooleanField(default=False)
-    receiver_deleted = models.BooleanField(default=False)
-    session = models.ForeignKey(Session, on_delete=models.CASCADE, null=True)
-    room_type = models.PositiveSmallIntegerField(choices=RoomType.choices, default=RoomType.GROUP)
-    team = models.ForeignKey(Team, on_delete=models.CASCADE, null=True)  # 私聊时为空
     timestamp = models.DateTimeField(default=timezone.now)
-    mtype = models.PositiveSmallIntegerField(choices=MessageType.choices, default=MessageType.TEXT)
-    checked = models.BooleanField(default=False)
-    text = models.TextField(null=True)
-    file = models.CharField(max_length=127, null=True)
+    room = models.ForeignKey(Room, on_delete=models.CASCADE, null=True)
+
+
+class MessageFile(models.Model):
+    name = models.CharField(max_length=127)
+    size = models.IntegerField()  # Byte
+    type = models.CharField(max_length=15)  # example: "png"
+    # audio = models.BooleanField(default=False)
+    # duration = models.DecimalField(default=0)
+    url = models.CharField(max_length=127)
+    message = models.ForeignKey(Message, on_delete=models.CASCADE)
 
 
 class Mention(models.Model):

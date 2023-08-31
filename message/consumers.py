@@ -5,8 +5,7 @@ from urllib.parse import parse_qs
 from channels.generic.websocket import WebsocketConsumer
 from asgiref.sync import async_to_sync
 
-from MewTeam import settings
-from message.models import Message, Mention, Session
+from message.models import Message, Mention
 from message.serializers import MessageSerializer
 from shared.token import verify_token, get_identity_from_token
 
@@ -18,8 +17,7 @@ class ChatConsumer(WebsocketConsumer):
         super().__init__(*args, **kwargs)
         self.user_id = None
         self.room_group_name = None
-        self.room_name = None
-        self.team_id = None
+        self.room_id = None
 
     def connect(self):
         try:
@@ -31,9 +29,8 @@ class ChatConsumer(WebsocketConsumer):
                 return
 
             self.user_id = get_identity_from_token(token)
-            self.room_name = self.scope["url_route"]["kwargs"]["team_id"]
-            self.team_id = self.room_name
-            self.room_group_name = f"chat_{self.room_name}"
+            self.room_id = self.scope["url_route"]["kwargs"]["room_id"]
+            self.room_group_name = f"chat_{self.room_id}"
 
             async_to_sync(self.channel_layer.group_add)(
                 self.room_group_name, self.channel_name
@@ -51,31 +48,13 @@ class ChatConsumer(WebsocketConsumer):
 
     def receive(self, text_data=None, bytes_data=None):
         try:
+            logger.error("---???text_data=" + text_data)
             text_data = json.loads(text_data)
-            mtype = text_data.get("mtype", 0)
-            mid = text_data.get("mid", None)
-            filename = text_data.get("filename", None)
-            text = text_data.get("text", None)
-            mention_user_id_list = text_data.get('mention_user_id_list', None)
-            room_type = text_data.get('room_type', Message.RoomType.GROUP)
-            if mtype == Message.MessageType.TEXT:
-                message = Message.objects.create(sender_user_id=self.user_id, text=text, mtype=mtype)
-            elif mtype in [Message.MessageType.IMAGE, Message.MessageType.FILE]:
-                message = Message.objects.create(sender_user_id=self.user_id, mtype=mtype,
-                                                 file=f"{settings.MESSAGE_FILE_URL}{mid}/{filename}")
-            else:
-                return
 
-            if room_type == Message.RoomType.GROUP:
-                message.team_id = self.team_id
-                message.save()
-            elif room_type == Message.RoomType.PRIVATE:
-                session = Session.objects.filter(session_id=self.team_id).first()
-                message.session = session
-                message.receiver_user = session.users.exclude(id=self.user_id).first()
-                message.save()
-            else:
-                return
+
+            content = text_data.get("content", None)
+            message = Message.objects.create(content=content, sender_user_id=self.user_id, room_id=self.room_id)
+            mention_user_id_list = text_data.get('mention_user_id_list', None)
 
             if mention_user_id_list is not None:
                 for user_id in mention_user_id_list:
