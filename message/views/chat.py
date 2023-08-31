@@ -5,6 +5,7 @@
 # @FileName: chat.py
 ===========================
 """
+import logging
 import os
 
 from rest_framework.decorators import api_view
@@ -21,6 +22,8 @@ from team.models import Team
 from user.models import User
 from user.serializers import UserSerializer
 from datetime import datetime, timedelta
+
+logger = logging.getLogger('__name__')
 
 
 @api_view(['POST'])
@@ -110,6 +113,24 @@ def create_group(request, team_id):
         return ResponseTemplate(Error.FAILED, str(e))
 
 
+@api_view(['POST'])
+def create_private_room(request, team_id):
+    try:
+        response, current_user_id = check_token(request)
+        if current_user_id == -1:
+            return response
+        user_id = request.data['user_id']
+        user1 = User.objects.get(id=current_user_id)
+        user2 = User.objects.get(id=user_id)
+        room = Room.objects.create(roomName=f"{user1.name}和{user2.name}的会话", type=Room.RoomType.PRIVATE,
+                                   team_id=team_id)
+        UserRoomShip.objects.create(room=room, user=user1, identify=UserRoomShip.Identify.NORMAL)
+        UserRoomShip.objects.create(room=room, user=user2, identify=UserRoomShip.Identify.NORMAL)
+        return ResponseTemplate(Error.SUCCESS, 'success create private room')
+    except Exception as e:
+        return ResponseTemplate(Error.FAILED, str(e))
+
+
 @api_view(['GET'])
 def get_room_list(request, team_id):
     try:
@@ -193,6 +214,33 @@ def get_create_group_user_list(request, team_id):
         users_info = []
         for ship in ships:
             if ship.user.id != user_id:
+                users_info.append(UserSerializer(ship.user).data)
+        return ResponseTemplate(Error.SUCCESS, 'success', data=users_info)
+    except Exception as e:
+        return ResponseTemplate(Error.FAILED, str(e))
+
+
+@api_view(['GET'])
+def get_create_private_group_user_list(request, team_id):
+    try:
+        response, current_user_id = check_token(request)
+        if current_user_id == -1:
+            return response
+        team = Team.objects.filter(id=team_id).first()
+        ships = team.userteamship_set.all()
+
+        current_user_private_ships = UserRoomShip.objects.filter(user_id=current_user_id,
+                                                                 room__type=Room.RoomType.PRIVATE,
+                                                                 room__team_id=team_id).all()
+        exist_private_user_id_list = []
+        for ship in current_user_private_ships:
+            for room_ship in ship.room.userroomship_set.all():
+                if room_ship.user_id != current_user_id:
+                    exist_private_user_id_list.append(room_ship.user_id)
+
+        users_info = []
+        for ship in ships:
+            if ship.user.id != current_user_id and ship.user.id not in exist_private_user_id_list:
                 users_info.append(UserSerializer(ship.user).data)
         return ResponseTemplate(Error.SUCCESS, 'success', data=users_info)
     except Exception as e:
