@@ -36,6 +36,7 @@ with open("config.yaml", 'r') as f:
 
 MEDIA_URL = 'media/'
 AVATAR_URL = os.path.join(MEDIA_URL, "avatar/")
+TEAM_AVATAR_URL = os.path.join(MEDIA_URL, "team_avatar/")
 MESSAGE_FILE_URL = os.path.join(MEDIA_URL, "message/")
 
 MEDIA_ROOT = os.path.join(BASE_DIR, "media/")
