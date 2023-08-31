@@ -29,7 +29,8 @@ def create_prototype(request, pro_id):
             return ResponseTemplate(Error.PTT_EXISTS, 'Prototype already exists')
         ptt = Prototype.objects.create(project_id=pro_id, name=name)
         PrototypeContent.objects.create(prototype=ptt)
-        return ResponseTemplate(Error.SUCCESS, 'create prototype successfully')
+        return ResponseTemplate(Error.SUCCESS, 'create prototype successfully',
+                                data=PrototypeSerializer(ptt).data)
     except Project.DoesNotExist:
         return ResponseTemplate(Error.DATA_NOT_FOUND, 'project not found')
     except Exception as e:
