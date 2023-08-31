@@ -95,12 +95,16 @@ def get_private_chat_history(request, session_id):
 @api_view(['POST'])
 def create_group(request, team_id):
     try:
-        response, user_id = check_token(request)
-        if user_id == -1:
+        response, current_user_id = check_token(request)
+        if current_user_id == -1:
             return response
         name = request.data['name']
+        users_info = request.data['users']
         team = Team.objects.get(id=team_id)
-        create_room(user_id=user_id, name=name, room_type=Room.RoomType.GROUP, team=team)
+        room = create_room(user_id=current_user_id, name=name, room_type=Room.RoomType.GROUP, team=team)
+        for user_info in users_info:
+            user_id = user_info['id']
+            UserRoomShip.objects.create(user_id=user_id, room=room, identify=UserRoomShip.Identify.NORMAL)
         return ResponseTemplate(Error.SUCCESS, 'create room successfully')
     except Exception as e:
         return ResponseTemplate(Error.FAILED, str(e))
@@ -174,5 +178,22 @@ def dissolve_room(request, room_id):
         room = ship.room
         room.delete()
         return ResponseTemplate(Error.SUCCESS, 'dissolve chat room successfully')
+    except Exception as e:
+        return ResponseTemplate(Error.FAILED, str(e))
+
+
+@api_view(['GET'])
+def get_create_group_user_list(request, team_id):
+    try:
+        response, user_id = check_token(request)
+        if user_id == -1:
+            return response
+        team = Team.objects.filter(id=team_id).first()
+        ships = team.userteamship_set.all()
+        users_info = []
+        for ship in ships:
+            if ship.user.id != user_id:
+                users_info.append(UserSerializer(ship.user).data)
+        return ResponseTemplate(Error.SUCCESS, 'success', data=users_info)
     except Exception as e:
         return ResponseTemplate(Error.FAILED, str(e))

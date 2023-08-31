@@ -2,11 +2,13 @@ from django.utils import timezone
 
 from django.db import models
 
+from MewTeam import settings
 from user.models import User
 
 
 class Team(models.Model):
     name = models.CharField(max_length=63)
+    avatar = models.CharField(max_length=63, default=f"{settings.TEAM_AVATAR_URL}default.jpg")
 
 
 class UserTeamShip(models.Model):

@@ -13,4 +13,5 @@ urlpatterns = [
     path('teams/<int:team_id>', teams.disband_team),
     path('teams/<int:team_id>/users/<int:user_id>/', members.remove_team_user),
     path('teams/<int:team_id>/users/<int:user_id>/join/', invitation.join_team),
+    path('teams/<int:team_id>/avatar/', teams.update_team_avatar),
 ]
