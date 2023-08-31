@@ -29,7 +29,7 @@ class DocumentDirSerializer(serializers.ModelSerializer):
     isFolder = serializers.SerializerMethodField()
     class Meta:
         model = DocumentDir
-        fields = ['name']
+        fields = ['name', 'isFolder']
 
     def get_isFolder(self, obj):
         return True
