@@ -9,12 +9,15 @@ from project.views import pro_manage, document, prototype, guest, doc_manage
 
 urlpatterns = {
     path('teams/<int:team_id>/create/', pro_manage.create_project, name='create_project'),
-    path('teams/<int:team_id>/projects/<int:pro_id>/update/', pro_manage.update_project, name='update_project'),
-    path('teams/<int:team_id>/projects/<int:pro_id>/delete/', pro_manage.delete_project, name='delete_project'),
-    path('teams/<int:team_id>/projects/<int:pro_id>/recover/', pro_manage.recover_project, name="recover_project"),
-    path('teams/<int:team_id>/projects/<int:pro_id>/destroy/', pro_manage.destroy_project, name='destroy_project'),
+    path('teams/<int:team_id>/search/', pro_manage.search_project, name='search_project'),
     path('teams/<int:team_id>/destroy/', pro_manage.destroy_all_project, name='destroy_all'),
     path('teams/<int:team_id>/list/', pro_manage.list_project, name='list_project'),
+
+    path('projects/<int:pro_id>/update/', pro_manage.update_project, name='update_project'),
+    path('projects/<int:pro_id>/delete/', pro_manage.delete_project, name='delete_project'),
+    path('projects/<int:pro_id>/recover/', pro_manage.recover_project, name="recover_project"),
+    path('projects/<int:pro_id>/destroy/', pro_manage.destroy_project, name='destroy_project'),
+    path('projects/<int:pro_id>/copy/', pro_manage.copy_project, name='copy_project'),
 
     path('projects/<int:pro_id>/documents/', doc_manage.create_document),
     path('projects/<int:pro_id>/directories/', doc_manage.create_dir),
