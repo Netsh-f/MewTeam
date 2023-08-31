@@ -8,7 +8,7 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 
 from project.models import Project, Document, DocumentContent, DocumentDir
-from project.serializers import DocumentDirSerializer, DocumentSerializer
+from project.serializers import DocumentSerializer
 from project.views.utils._doc_manage import _init_doc_struction
 from shared.error import Error
 from shared.permission import is_team_member
