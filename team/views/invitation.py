@@ -2,6 +2,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import status
 from rest_framework.decorators import api_view
 
+from shared.chat_center import join_room
 from shared.email import send_invitation
 from shared.error import Error
 from shared.random import generate_invitation_code
@@ -53,6 +54,10 @@ def join_team_with_invitation(request):
         if ship is not None:
             return ResponseTemplate(Error.EXIST_ERROR, 'you have joined this team')
         UserTeamShip.objects.create(user=user, team=team)
+
+        room = team.room_set.first()
+        join_room(user_id=current_user_id, room=room)
+
         return ResponseTemplate(Error.SUCCESS, 'join team successfully')
     except ObjectDoesNotExist as e:
         return ResponseTemplate(Error.DATABASE_INTERNAL_ERROR, str(e))

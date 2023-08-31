@@ -22,4 +22,8 @@ urlpatterns = [
     path('sessions/', chat.get_session_id),
     path('sessions/list/', chat.get_private_chat_sessions),
     path('sessions/<str:session_id>/messages/', chat.get_private_chat_history),
+
+    path('rooms/', chat.create_group),
+    path('teams/<int:team_id>/rooms/list/', chat.get_room_list),
+    path('rooms/<int:room_id>/history/', chat.get_chat_history),
 ]

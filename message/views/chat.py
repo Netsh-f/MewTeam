@@ -10,13 +10,16 @@ import os
 from rest_framework.decorators import api_view
 
 from MewTeam import settings
-from message.models import Session
-from message.serializers import SessionSerializer, MessageSerializer
+from message.models import Room, UserRoomShip, Message
+from message.serializers import RoomSerializer, MessageSerializer, MessageFileSerializer
+from shared.chat_center import create_room
 from shared.error import Error
 from shared.random import generate_session_id
 from shared.res_temp import ResponseTemplate
 from shared.token import check_token
 from user.models import User
+from user.serializers import UserSerializer
+from datetime import datetime, timedelta
 
 
 @api_view(['POST'])
@@ -51,11 +54,11 @@ def get_session_id(request):
         target_user_id = request.data['target_user_id']
         user1 = User.objects.get(id=user_id)
         user2 = User.objects.get(id=target_user_id)
-        session = Session.objects.filter(users=user1).filter(users=user2).first()
+        session = Room.objects.filter(users=user1).filter(users=user2).first()
         if session is None:
-            session = Session.objects.create(session_id=generate_session_id())
+            session = Room.objects.create(session_id=generate_session_id())
             session.users.add(user1, user2)
-        return ResponseTemplate(Error.SUCCESS, 'get session info successfully', data=SessionSerializer(session).data)
+        return ResponseTemplate(Error.SUCCESS, 'get session info successfully', data=RoomSerializer(session).data)
     except Exception as e:
         return ResponseTemplate(Error.FAILED, str(e))
 
@@ -67,9 +70,9 @@ def get_private_chat_sessions(request):
         if user_id == -1:
             return response
         user = User.objects.get(id=user_id)
-        sessions = Session.objects.filter(users=user).all()
+        sessions = Room.objects.filter(users=user).all()
         return ResponseTemplate(Error.SUCCESS, 'get session list successfully',
-                                data=SessionSerializer(sessions, many=True).data)
+                                data=RoomSerializer(sessions, many=True).data)
     except Exception as e:
         return ResponseTemplate(Error.FAILED, str(e))
 
@@ -80,9 +83,63 @@ def get_private_chat_history(request, session_id):
         response, user_id = check_token(request)
         if user_id == -1:
             return response
-        session = Session.objects.get(session_id=session_id)
+        session = Room.objects.get(session_id=session_id)
         messages = session.message_set.order_by('-timestamp')[:100]
         return ResponseTemplate(Error.SUCCESS, 'get private chat history messages successfully',
                                 data=MessageSerializer(messages, many=True).data)
+    except Exception as e:
+        return ResponseTemplate(Error.FAILED, str(e))
+
+
+@api_view(['POST'])
+def create_group(request):
+    try:
+        response, user_id = check_token(request)
+        if user_id == -1:
+            return response
+        name = request.data['name']
+        create_room(user_id=user_id, name=name, room_type=Room.RoomType.GROUP)
+    except Exception as e:
+        return ResponseTemplate(Error.FAILED, str(e))
+
+
+@api_view(['GET'])
+def get_room_list(request, team_id):
+    try:
+        response, user_id = check_token(request)
+        if user_id == -1:
+            return response
+        ships = UserRoomShip.objects.filter(user_id=user_id, room__team_id=team_id).all()
+        rooms = []
+        for ship in ships:
+            room_info = RoomSerializer(ship.room).data
+            users_info = []
+            for room_ship in ship.room.userroomship_set.all():
+                users_info.append(UserSerializer(room_ship.user).data)
+            room_info['users'] = users_info
+            rooms.append(room_info)
+        return ResponseTemplate(Error.SUCCESS, 'get room list', data=rooms)
+    except Exception as e:
+        return ResponseTemplate(Error.FAILED, str(e))
+
+
+@api_view(['GET'])
+def get_chat_history(request, room_id):
+    try:
+        response, user_id = check_token(request)
+        if user_id == -1:
+            return response
+        earliest_message_id = request.query_params.get('earliest_message_id', None)
+        if earliest_message_id:
+            messages = Message.objects.filter(room_id=room_id, id__lt=earliest_message_id).order_by('-timestamp')[:50][
+                       ::-1]
+        else:
+            messages = Message.objects.filter(room_id=room_id).order_by('-timestamp')[:50][::-1]
+        messages_info = []
+        for message in messages:
+            message_info = MessageSerializer(message).data
+            message_info['files'] = MessageFileSerializer(message.messagefile_set.all(), many=True).data
+            messages_info.append(message_info)
+        return ResponseTemplate(Error.SUCCESS, 'success', data=messages_info)
     except Exception as e:
         return ResponseTemplate(Error.FAILED, str(e))

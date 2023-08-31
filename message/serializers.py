@@ -1,14 +1,12 @@
 from rest_framework import serializers
 
-from message.models import Message, Mention, Session
+from message.models import Message, Mention, Room, MessageFile
 from team.serializers import TeamSerializer
 from user.serializers import UserSerializer
 
 
 class MessageSerializer(serializers.ModelSerializer):
     sender_user = UserSerializer()
-    receiver_user = UserSerializer()
-    team = TeamSerializer()
 
     class Meta:
         model = Message
@@ -28,7 +26,15 @@ class MentionSerializer(serializers.ModelSerializer):
         return obj.text
 
 
-class SessionSerializer(serializers.ModelSerializer):
+class RoomSerializer(serializers.ModelSerializer):
+    roomId = serializers.IntegerField(source='id')
+
     class Meta:
-        model = Session
+        model = Room
+        fields = '__all__'
+
+
+class MessageFileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MessageFile
         fields = '__all__'
