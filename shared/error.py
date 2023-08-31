@@ -51,6 +51,7 @@ class Error:
     DOC_DIR_EXISTS = 60001
     DOC_STRUCT_NOT_INIT = 60002
     DOC_DIR_NOT_EXISTS = 60003
+    DOC_EXISTS = 60004
 
     # prototype modules
     PTT_EXISTS = 70001
