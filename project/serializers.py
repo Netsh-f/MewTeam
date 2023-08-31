@@ -29,7 +29,7 @@ class DocumentDirSerializer(serializers.ModelSerializer):
     isFolder = serializers.SerializerMethodField()
     class Meta:
         model = DocumentDir
-        fields = ['name']
+        fields = ['name', 'isFolder']
 
     def get_isFolder(self, obj):
         return True
@@ -37,7 +37,6 @@ class DocumentContentSerializer(serializers.ModelSerializer):
     class Meta:
         model = DocumentContent
         fields = '__all__'
-
 
 class DocumentContentSimpleSerializer(serializers.ModelSerializer):
     class Meta:
@@ -50,7 +49,13 @@ class PrototypeSerializer(serializers.ModelSerializer):
         model = Prototype
         fields = "__all__"
 
+class PrototypeSimpleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Prototype
+        fields = ['id', 'name']
+
 class PrototypeContentSerializer(serializers.ModelSerializer):
+    prototype = PrototypeSimpleSerializer()
     class Meta:
         model = PrototypeContent
         fields = "__all__"
