@@ -26,4 +26,5 @@ urlpatterns = [
     path('teams/<int:team_id>/rooms/', chat.create_group),
     path('teams/<int:team_id>/rooms/list/', chat.get_room_list),
     path('rooms/<int:room_id>/history/', chat.get_chat_history),
+    path('rooms/<int:room_id>/exit/', chat.exit_room),
 ]

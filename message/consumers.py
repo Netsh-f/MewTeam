@@ -29,7 +29,7 @@ class ChatConsumer(WebsocketConsumer):
                 return
 
             self.user_id = get_identity_from_token(token)
-            self.room_id = self.scope["url_route"]["kwargs"]["room_id"]
+            self.room_id = self.scope["url_route"]["kwargs"]["team_id"]
             self.room_group_name = f"chat_{self.room_id}"
 
             async_to_sync(self.channel_layer.group_add)(
@@ -51,9 +51,9 @@ class ChatConsumer(WebsocketConsumer):
             logger.error("---???text_data=" + text_data)
             text_data = json.loads(text_data)
 
-
             content = text_data.get("content", None)
-            message = Message.objects.create(content=content, sender_user_id=self.user_id, room_id=self.room_id)
+            room_id = text_data.get("roomId", None)
+            message = Message.objects.create(content=content, sender_user_id=self.user_id, room_id=room_id)
             mention_user_id_list = text_data.get('mention_user_id_list', None)
 
             if mention_user_id_list is not None:

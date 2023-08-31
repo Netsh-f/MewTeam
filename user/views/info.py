@@ -21,21 +21,22 @@ def infoShow(request, user_id):
     else:
         return ResponseTemplate(Error.USER_NOT_EXISTS, '用户不存在')
 
+
 @api_view(['PUT'])
 def infoEdit(request, user_id):
-    data:dict = request.data
+    data: dict = request.data
     try:
         user = User.objects.get(id=user_id)
-        name = data.get('name')
-        email = data.get('email')
-        nickname = data.get('nickname')
+        name = data.get('name', None)
+        nickname = data.get('nickname', None)
+        password = data.get('password', None)
 
-        if name != None:
+        if name is not None:
             user.name = name
-        if email != None:
-            user.email = email
-        if nickname != None:
+        if nickname is not None:
             user.nickname = nickname
+        if password is not None:
+            user.password = password
         user.save()
         return ResponseTemplate(Error.SUCCESS, '用户信息修改成功！')
     except Exception:
