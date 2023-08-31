@@ -117,6 +117,5 @@ def verify_password(password, token) -> bool:
 def check_token(request):
     token = request.META.get('HTTP_AUTHORIZATION', '')
     if not verify_token(token):
-        logging.getLogger('__name__').error(token)
         return ResponseTemplate(Error.TOKEN_INVALID, "token is invalid"), -1
     return None, get_identity_from_token(token)

@@ -5,7 +5,7 @@
 # @File    : urls.py
 #
 from django.urls import path
-from project.views import curd, document, prototype, guest
+from project.views import curd, document, prototype, guest, doc_manage
 
 urlpatterns = {
     path('teams/<int:team_id>/create/', curd.create_project, name='create_project'),
@@ -13,8 +13,9 @@ urlpatterns = {
     path('teams/<int:team_id>/projects/<int:pro_id>/delete/', curd.delete_project, name='delete_project'),
     path('teams/<int:team_id>/projects/<int:pro_id>/recover/', curd.recover_project, name="recover_project"),
     path('teams/<int:team_id>/list/', curd.list_project, name='list_project'),
-    path('projects/<int:pro_id>/documents/', document.create_document),
-    path('projects/<int:pro_id>/documents/get/', document.get_documents_by_project_id),
+    path('projects/<int:pro_id>/documents/', doc_manage.create_document),
+    path('projects/<int:pro_id>/directories/', doc_manage.create_dir),
+    path('projects/<int:pro_id>/documents/get/', doc_manage.get_documents),
     path('documents/<int:document_id>/', document.save_document),
     path('documents/<int:document_id>/latest/', document.get_latest_document),
     path('documents/<int:document_id>/history/', document.get_history_document_list),

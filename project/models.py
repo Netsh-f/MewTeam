@@ -14,13 +14,19 @@ class Project(models.Model):
     delete_time = models.DateTimeField(null=True)
     cover = models.CharField(max_length=127)
 
+class DocumentDir(models.Model):
+    name = models.CharField(max_length=63)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    par_dir = models.ForeignKey('self', on_delete=models.CASCADE, null=True)
 
 class Document(models.Model):
     name = models.CharField(max_length=63)
+    # maybe we can simplify it
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     create_at = models.DateTimeField(default=timezone.now)
     modified_at = models.DateTimeField(default=timezone.now)
     is_deleted = models.BooleanField(default=False)
+    par_dir = models.ForeignKey(DocumentDir, on_delete=models.CASCADE)
 
 
 class DocumentContent(models.Model):

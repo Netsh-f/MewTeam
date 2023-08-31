@@ -31,7 +31,7 @@ def create_project(request, team_id):
         if not _is_legal_identity(user_id, team_id):
             return ResponseTemplate(Error.ILLEGAL_IDENTITY, '非法创建，请检查您的用户状态和团队信息')
 
-        project = Project.objects.filter(name=name).first()
+        project = Project.objects.filter(team_id=team_id, name=name).first()
         if project:
             return ResponseTemplate(Error.PRO_NAME_EXISTS, '项目名重复')
 

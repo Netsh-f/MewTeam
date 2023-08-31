@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from project.models import Project, Prototype, Document, DocumentContent
+from project.models import Project, Prototype, Document, DocumentContent, DocumentDir
 
 
 class ProjectSerializer(serializers.ModelSerializer):
@@ -8,7 +8,14 @@ class ProjectSerializer(serializers.ModelSerializer):
         model = Project
         fields = '__all__'
 
+class DocumentDirSerializer(serializers.ModelSerializer):
+    project = ProjectSerializer()
 
+    class Meta:
+        model = DocumentDir
+        fields = ['name', 'project']
+
+    # def to_representation(self, instance):
 class DocumentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Document
