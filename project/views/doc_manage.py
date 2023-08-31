@@ -8,7 +8,7 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 
 from project.models import Project, Document, DocumentContent, DocumentDir
-from project.serializers import DocumentSerializer
+from project.serializers import DocumentDirSerializer, DocumentSerializer
 from project.views.utils._doc_manage import _init_doc_struction
 from shared.error import Error
 from shared.permission import is_team_member
@@ -65,9 +65,14 @@ def get_documents(request, pro_id):
             return ResponseTemplate(Error.PERMISSION_DENIED, 'you are not one member of this team')
 
         _init_doc_struction(project)
-        projects = Document.objects.filter(project=project)
-        return ResponseTemplate(Error.SUCCESS, 'Query Successful',
-                                data=DocumentSerializer(projects, many=True).data)
+        documents = Document.objects.filter(project=project)
+
+        root_dir = DocumentDir.objects.get(name=f'root_{pro_id}')
+        sub_dirs = DocumentDir.objects.filter(par_dir=root_dir)
+        data = DocumentSerializer(documents, many=True).data + \
+               DocumentDirSerializer(sub_dirs, many=True).data
+        print(data)
+        return ResponseTemplate(Error.SUCCESS, 'Query Successful', data=data)
 
         # root_dir = DocumentDir.objects.get(name=f'root_{project.id}')
         # sub_dirs = DocumentDir.objects.filter(par_dir=root_dir)
@@ -82,6 +87,8 @@ def get_documents(request, pro_id):
         # return ResponseTemplate(Error.SUCCESS, 'Query Successful', data=sub_data+root_data)
     except Project.DoesNotExist:
         return ResponseTemplate(Error.DATA_NOT_FOUND, 'project not found')
+    except DocumentDir.DoesNotExist:
+        return ResponseTemplate(Error.DATA_NOT_FOUND, 'DocumentDir not found')
     except Exception as e:
         return ResponseTemplate(Error.FAILED, str(e))
 

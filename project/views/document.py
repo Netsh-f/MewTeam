@@ -13,7 +13,7 @@ from rest_framework.decorators import api_view
 
 from message.models import Mention
 from project.models import Document, Project, DocumentContent
-from project.serializers import DocumentContentSerializer, DocumentContentSimpleSerializer, DocumentSerializer
+from project.serializers import DocumentContentSerializer, DocumentContentSimpleSerializer, DocumentDirSerializer
 from shared.error import Error
 from shared.guest_token import check_guest_token
 from shared.permission import is_team_member
@@ -155,7 +155,7 @@ def get_documents_by_project_id(request, pro_id):
         project = Project.objects.get(id=pro_id)
         print('enter here')
         documents = project.document_set.all()
-        return ResponseTemplate(Error.SUCCESS, DocumentSerializer(documents, many=True).data)
+        return ResponseTemplate(Error.SUCCESS, DocumentDirSerializer(documents, many=True).data)
     except ObjectDoesNotExist as e:
         return ResponseTemplate(Error.DATA_NOT_FOUND, str(e))
     except Exception as e:

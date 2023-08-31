@@ -23,8 +23,16 @@ class DocumentSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def get_isFolder(self, obj):
-        return True
+        return False
 
+class DocumentDirSerializer(serializers.ModelSerializer):
+    isFolder = serializers.SerializerMethodField()
+    class Meta:
+        model = DocumentDir
+        fields = ['name']
+
+    def get_isFolder(self, obj):
+        return True
 class DocumentContentSerializer(serializers.ModelSerializer):
     class Meta:
         model = DocumentContent
