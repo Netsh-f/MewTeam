@@ -42,7 +42,6 @@ def register(request):
             return ResponseTemplate(Error.NAME_EXISTS, '真实姓名已被注册')
 
         user = User.objects.create(nickname=nickname, email=email, name=name, password=data['password'])
-        Team.objects.create(name=f"{user.name}的团队")
         data = {
             'user_id': user.id,
             'token': token.generate_token(user.id)
