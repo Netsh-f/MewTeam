@@ -120,6 +120,7 @@ def get_room_list(request, team_id):
             for room_ship in ship.room.userroomship_set.all():
                 users_info.append(UserSerializer(room_ship.user).data)
             room_info['users'] = users_info
+            room_info['current_user_identify'] = ship.identify
             rooms.append(room_info)
         return ResponseTemplate(Error.SUCCESS, 'get room list', data=rooms)
     except Exception as e:
@@ -144,5 +145,18 @@ def get_chat_history(request, room_id):
             message_info['files'] = MessageFileSerializer(message.messagefile_set.all(), many=True).data
             messages_info.append(message_info)
         return ResponseTemplate(Error.SUCCESS, 'success', data=messages_info)
+    except Exception as e:
+        return ResponseTemplate(Error.FAILED, str(e))
+
+
+@api_view(['POST'])
+def exit_room(request, room_id):
+    try:
+        response, user_id = check_token(request)
+        if user_id == -1:
+            return response
+        ship = UserRoomShip.objects.filter(user_id=user_id, room_id=room_id).first()
+        ship.delete()
+        return ResponseTemplate(Error.SUCCESS, 'exit chat room successfully')
     except Exception as e:
         return ResponseTemplate(Error.FAILED, str(e))
