@@ -99,6 +99,7 @@ def create_group(request):
             return response
         name = request.data['name']
         create_room(user_id=user_id, name=name, room_type=Room.RoomType.GROUP)
+        return ResponseTemplate(Error.SUCCESS, 'create room successfully')
     except Exception as e:
         return ResponseTemplate(Error.FAILED, str(e))
 
