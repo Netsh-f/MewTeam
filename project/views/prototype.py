@@ -44,6 +44,7 @@ def list_prototype(request, pro_id):
         project = Project.objects.get(id=pro_id)
         if not is_team_member(user_id, project.team_id):
             return ResponseTemplate(Error.PERMISSION_DENIED, 'you are not one member of this team')
+        print(Prototype.objects.filter(project_id=pro_id))
         return ResponseTemplate(Error.SUCCESS, 'query prototypes successfully',
                                 data=PrototypeSerializer(Prototype.objects.filter(project_id=pro_id),
                                                          many=True).data)
