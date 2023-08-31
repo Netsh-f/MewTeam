@@ -2,6 +2,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import status
 from rest_framework.decorators import api_view
 
+from message.models import Room
 from shared.chat_center import join_room
 from shared.email import send_invitation
 from shared.error import Error
@@ -55,7 +56,7 @@ def join_team_with_invitation(request):
             return ResponseTemplate(Error.EXIST_ERROR, 'you have joined this team')
         UserTeamShip.objects.create(user=user, team=team)
 
-        room = team.room_set.first()
+        room = team.room_set.filter(type=Room.RoomType.TEAM).first()
         join_room(user_id=current_user_id, room=room)
 
         return ResponseTemplate(Error.SUCCESS, 'join team successfully')
