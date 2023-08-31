@@ -26,8 +26,8 @@ urlpatterns = {
     path('documents/contents/<int:document_content_id>/', document.get_document_content_by_id),
 
     path('projects/<int:pro_id>/prototypes/', prototype.create_prototype),
-    path('projects/<int:pro_id>/prototypes/list/', prototype.create_prototype),
-    path('prototypes/<int:ptt_id>/', prototype.save_prototype),
+    path('projects/<int:pro_id>/prototypes/list/', prototype.list_prototype),
+    path('prototypes/<int:ptt_id>/save/', prototype.save_prototype),
     path('prototypes/<int:ptt_id>/update/', prototype.update_prototype),
     path('prototypes/<int:ptt_id>/delete/', prototype.delete_prototype),
     path('prototypes/<int:ptt_id>/latest/', prototype.get_latest_prototype),

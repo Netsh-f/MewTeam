@@ -16,9 +16,14 @@ class CustomParDirField(serializers.StringRelatedField):
 
 class DocumentSerializer(serializers.ModelSerializer):
     par_dir = CustomParDirField()
+    isFolder = serializers.SerializerMethodField()
+
     class Meta:
         model = Document
         fields = '__all__'
+
+    def get_isFolder(self, obj):
+        return True
 
 class DocumentContentSerializer(serializers.ModelSerializer):
     class Meta:
