@@ -160,3 +160,19 @@ def exit_room(request, room_id):
         return ResponseTemplate(Error.SUCCESS, 'exit chat room successfully')
     except Exception as e:
         return ResponseTemplate(Error.FAILED, str(e))
+
+
+@api_view(['POST'])
+def dissolve_room(request, room_id):
+    try:
+        response, user_id = check_token(request)
+        if user_id == -1:
+            return response
+        ship = UserRoomShip.objects.filter(user_id=user_id, room_id=room_id).first()
+        if ship.identify != UserRoomShip.Identify.CREATOR:
+            return ResponseTemplate(Error.PERMISSION_DENIED, 'you are not the creator of this team')
+        room = ship.room
+        room.delete()
+        return ResponseTemplate(Error.SUCCESS, 'dissolve chat room successfully')
+    except Exception as e:
+        return ResponseTemplate(Error.FAILED, str(e))
