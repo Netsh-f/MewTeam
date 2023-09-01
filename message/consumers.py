@@ -7,6 +7,7 @@ from asgiref.sync import async_to_sync
 
 from message.models import Message, Mention
 from message.serializers import MessageSerializer
+from shared.regex_helper import extract_user_ids
 from shared.token import verify_token, get_identity_from_token
 
 logger = logging.getLogger(__name__)
@@ -54,7 +55,8 @@ class ChatConsumer(WebsocketConsumer):
             content = text_data.get("content", None)
             room_id = text_data.get("roomId", None)
             message = Message.objects.create(content=content, sender_user_id=self.user_id, room_id=room_id)
-            mention_user_id_list = text_data.get('mention_user_id_list', None)
+
+            mention_user_id_list = extract_user_ids(content)
 
             if mention_user_id_list is not None:
                 for user_id in mention_user_id_list:
