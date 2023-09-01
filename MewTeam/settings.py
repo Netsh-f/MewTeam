@@ -116,7 +116,7 @@ CHANNEL_LAYERS = {
 #         },
 #     },
 # }
-
+# TODO: Remember to check firewall open 6379 or not
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases

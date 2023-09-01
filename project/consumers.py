@@ -21,6 +21,7 @@ class PttConsumer(WebsocketConsumer):
         super().__init__(*args, **kwargs)
         self.user_id = None
         self.room_id = None
+        # same as ptt_id
         self.room_name = None
 
     def connect(self):
@@ -33,7 +34,7 @@ class PttConsumer(WebsocketConsumer):
                 return
 
             self.user_id = get_identity_from_token(token)
-            self.room_id = self.scope["url_route"]["kwargs"]["room_id"]
+            self.room_id = self.scope["url_route"]["kwargs"]["ptt_id"]
             self.room_name = f"ptt_{self.room_id}"
 
             async_to_sync(self.channel_layer.group_add)(
@@ -53,6 +54,7 @@ class PttConsumer(WebsocketConsumer):
     def receive(self, text_data=None, bytes_data=None):
         try:
             text_data_json = json.loads(text_data)
+            logger.info(text_data_json)
 
             content = text_data_json.get("content", None)
             message = Message.objects.create(content=content, sender_user_id=self.user_id, room_id=self.room_id)
@@ -69,8 +71,5 @@ class PttConsumer(WebsocketConsumer):
             logger.error(str(e))
 
     def chat_message(self, event):
-        # message = event["message"]
-        logger.error('in chat_message, event: ' + str(event))
-
-        # Send message to WebSocket
-        self.send(text_data=json.dumps({"message": event}))
+        data = event["data"]
+        self.send(text_data=json.dumps({"data": data}))
