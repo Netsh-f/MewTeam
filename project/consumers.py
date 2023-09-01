@@ -31,17 +31,14 @@ class PttConsumer(WebsocketConsumer):
 
     def connect(self):
         try:
-            logger.error('trying to connect ptt room')
             query_string = self.scope['query_string'].decode('utf-8')
             query_params = parse_qs(query_string)
             token = query_params.get('token', [''])[0]
             if not verify_token(token):
                 self.close()
                 return
-
             self.user_id = get_identity_from_token(token)
             self.room_id = self.scope["url_route"]["kwargs"]["ptt_id"]
-            logger.error(self.room_id)
             self.room_name = f"ptt_{self.room_id}"
             async_to_sync(self.channel_layer.group_add)(
                 self.room_name, self.channel_name
@@ -64,10 +61,11 @@ class PttConsumer(WebsocketConsumer):
             logger.info(text_data_json)
 
             data = {
-                'id': self.user_id,
-                'cursor_x': text_data_json.get('cursor_x', None),
-                'cursor_y': text_data_json.get('cursor_y', None)
+                "id": self.user_id,
+                "cursor_x": text_data_json.get("cursor_x", None),
+                "cursor_y": text_data_json.get("cursor_y", None)
             }
+            logger.info(data)
             async_to_sync(self.channel_layer.group_send)(
                 self.room_name, {
                     "type": "chat.message",
