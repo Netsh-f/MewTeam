@@ -8,6 +8,7 @@
 import logging
 import os
 
+from django.db.models import Q
 from rest_framework.decorators import api_view
 
 from MewTeam import settings
@@ -44,52 +45,6 @@ def upload_message_file(request):
             for chunk in file.chunks():
                 f.write(chunk)
         return ResponseTemplate(Error.SUCCESS, 'upload file successfully')
-    except Exception as e:
-        return ResponseTemplate(Error.FAILED, str(e))
-
-
-@api_view(['POST'])
-def get_session_id(request):
-    try:
-        response, user_id = check_token(request)
-        if user_id == -1:
-            return response
-        target_user_id = request.data['target_user_id']
-        user1 = User.objects.get(id=user_id)
-        user2 = User.objects.get(id=target_user_id)
-        session = Room.objects.filter(users=user1).filter(users=user2).first()
-        if session is None:
-            session = Room.objects.create(session_id=generate_session_id())
-            session.users.add(user1, user2)
-        return ResponseTemplate(Error.SUCCESS, 'get session info successfully', data=RoomSerializer(session).data)
-    except Exception as e:
-        return ResponseTemplate(Error.FAILED, str(e))
-
-
-@api_view(['GET'])
-def get_private_chat_sessions(request):
-    try:
-        response, user_id = check_token(request)
-        if user_id == -1:
-            return response
-        user = User.objects.get(id=user_id)
-        sessions = Room.objects.filter(users=user).all()
-        return ResponseTemplate(Error.SUCCESS, 'get session list successfully',
-                                data=RoomSerializer(sessions, many=True).data)
-    except Exception as e:
-        return ResponseTemplate(Error.FAILED, str(e))
-
-
-@api_view(['GET'])
-def get_private_chat_history(request, session_id):
-    try:
-        response, user_id = check_token(request)
-        if user_id == -1:
-            return response
-        session = Room.objects.get(session_id=session_id)
-        messages = session.message_set.order_by('-timestamp')[:100]
-        return ResponseTemplate(Error.SUCCESS, 'get private chat history messages successfully',
-                                data=MessageSerializer(messages, many=True).data)
     except Exception as e:
         return ResponseTemplate(Error.FAILED, str(e))
 
@@ -169,6 +124,24 @@ def get_chat_history(request, room_id):
             message_info['files'] = MessageFileSerializer(message.messagefile_set.all(), many=True).data
             messages_info.append(message_info)
         return ResponseTemplate(Error.SUCCESS, 'success', data=messages_info)
+    except Exception as e:
+        return ResponseTemplate(Error.FAILED, str(e))
+
+
+@api_view(['GET'])
+def search_history_message(request, room_id):
+    try:
+        response, user_id = check_token(request)
+        if user_id == -1:
+            return response
+        keyword = request.query_params.get('keyword', None)
+        if keyword and keyword != "":
+            query = Q(content__icontains=keyword)
+        else:
+            query = Q()  # 空查询，返回所有消息
+        messages = Message.objects.filter(room_id=room_id).filter(query).all()
+        return ResponseTemplate(Error.SUCCESS, 'search history success',
+                                data=MessageSerializer(messages, many=True).data)
     except Exception as e:
         return ResponseTemplate(Error.FAILED, str(e))
 
