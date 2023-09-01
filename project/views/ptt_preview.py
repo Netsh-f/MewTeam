@@ -38,7 +38,8 @@ def generate_ptt_invitation_code(request, pro_id):
 def verify_ptt_invitation_code(request, pro_id):
     try:
         project = Project.objects.get(id=pro_id)
-        inv_code = request.GET.get('inv_code')
+        inv_code = request.data.get('inv_code')
+        # inv_code = request.GET.get('inv_code')
         if (not project.preview_enabled) or project.inv_code != inv_code:
             return ResponseTemplate(Error.PERMISSION_DENIED, 'Permission denied!')
         else:

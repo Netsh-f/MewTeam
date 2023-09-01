@@ -41,12 +41,16 @@ def create_prototype(request, pro_id):
 @api_view(['GET'])
 def list_prototype(request, pro_id):
     try:
-        response, user_id = check_token(request)
-        if user_id == -1:
-            return response
-        project = Project.objects.get(id=pro_id)
-        if not is_team_member(user_id, project.team_id):
-            return ResponseTemplate(Error.PERMISSION_DENIED, 'you are not one member of this team')
+        inv_code = request.data.get('inv_code')
+        if inv_code != '' and Project.objects.filter(inv_code=inv_code).exists():
+            pass
+        else:
+            response, user_id = check_token(request)
+            if user_id == -1:
+                return response
+            project = Project.objects.get(id=pro_id)
+            if not is_team_member(user_id, project.team_id):
+                return ResponseTemplate(Error.PERMISSION_DENIED, 'you are not one member of this team')
         # print(Prototype.objects.filter(project_id=pro_id))
         return ResponseTemplate(Error.SUCCESS, 'query prototypes successfully',
                                 data=PrototypeSerializer(Prototype.objects.filter(project_id=pro_id),
@@ -102,9 +106,13 @@ def save_prototype(request, ptt_id):
 @api_view(['GET'])
 def get_latest_prototype(request, ptt_id):
     try:
-        response, user_id = check_token(request)
-        if user_id == -1:
-            return response
+        inv_code = request.data.get('inv_code')
+        if inv_code != '' and Project.objects.filter(inv_code=inv_code).exists():
+            pass
+        else:
+            response, user_id = check_token(request)
+            if user_id == -1:
+                return response
         latest_prototype = PrototypeContent.objects.filter(prototype_id=ptt_id).\
                             order_by('-timestamp').first()
         return ResponseTemplate(Error.SUCCESS, 'get latest prototype successfully',
