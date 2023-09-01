@@ -21,7 +21,6 @@ from shared.token import check_token
 from team.models import Team
 from user.models import User
 from user.serializers import UserSerializer
-from datetime import datetime, timedelta
 
 logger = logging.getLogger('__name__')
 
@@ -172,7 +171,8 @@ def get_chat_history(request, room_id):
         messages_info = []
         for message in messages:
             message_info = MessageSerializer(message).data
-            message_info['files'] = MessageFileSerializer(message.messagefile_set.all(), many=True).data
+            message_files = MessageFile.objects.filter(min=message.mid).all()
+            message_info['files'] = MessageFileSerializer(message_files, many=True).data
             messages_info.append(message_info)
         return ResponseTemplate(Error.SUCCESS, 'success', data=messages_info)
     except Exception as e:
