@@ -35,6 +35,9 @@ urlpatterns = {
     path('projects/<int:pro_id>/prototypes/', prototype.create_prototype),
     path('projects/<int:pro_id>/prototypes/list/', prototype.list_prototype),
     path('projects/<int:pro_id>/prototypes/preview/', ptt_preview.generate_ptt_invitation_code),
+    path('projects/<int:pro_id>/prototypes/vertify/', ptt_preview.verify_ptt_invitation_code),
+    path('projects/<int:pro_id>/prototypes/diable/', ptt_preview.disable_ptt_preview),
+
     path('prototypes/<int:ptt_id>/save/', prototype.save_prototype),
     path('prototypes/<int:ptt_id>/update/', prototype.update_prototype),
     path('prototypes/<int:ptt_id>/delete/', prototype.delete_prototype),
@@ -42,7 +45,6 @@ urlpatterns = {
 
     path('documents/<int:document_id>/guests/tokens/', guest.generate_guest_token),
     path('guests/tokens/validate/', guest.validate_guest_token),
-
 
 }
 

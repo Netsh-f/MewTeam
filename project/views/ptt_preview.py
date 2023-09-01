@@ -14,7 +14,7 @@ from shared.res_temp import ResponseTemplate
 from shared.token import check_token
 
 
-@api_view(['POST'])
+@api_view(['GET'])
 def generate_ptt_invitation_code(request, pro_id):
     try:
         response, user_id = check_token(request)
@@ -24,8 +24,41 @@ def generate_ptt_invitation_code(request, pro_id):
         if not is_team_member(user_id, project.team_id):
             return ResponseTemplate(Error.PERMISSION_DENIED, 'you are not one member of this team')
 
-        inv_code = generate_invitation_code()
-        return ResponseTemplate(Error.SUCCESS, 'Generating success!', data=generate_invitation_code())
+        project.preview_enabled = True
+        project.inv_code = generate_invitation_code()
+        project.save()
+        return ResponseTemplate(Error.SUCCESS, 'Generating success!', project.inv_code)
+    except Project.DoesNotExist:
+        return ResponseTemplate(Error.DATA_NOT_FOUND, 'project not found')
+    except Exception as e:
+        return ResponseTemplate(Error.FAILED, str(e))
+
+@api_view(['GET'])
+def verify_ptt_invitation_code(request, pro_id):
+    try:
+        project = Project.objects.get(id=pro_id)
+        inv_code = request.GET.get('inv_code')
+        if (not project.preview_enabled) or project.inv_code != inv_code:
+            return ResponseTemplate(Error.PERMISSION_DENIED, 'Permission denied!')
+        else:
+            return ResponseTemplate(Error.SUCCESS, 'Preview success!')
+    except Project.DoesNotExist:
+        return ResponseTemplate(Error.DATA_NOT_FOUND, 'project not found')
+    except Exception as e:
+        return ResponseTemplate(Error.FAILED, str(e))
+
+@api_view(['DELETE'])
+def disable_ptt_preview(request, pro_id):
+    try:
+        response, user_id = check_token(request)
+        if user_id == -1:
+            return response
+        project = Project.objects.get(id=pro_id)
+        if not is_team_member(user_id, project.team_id):
+            return ResponseTemplate(Error.PERMISSION_DENIED, 'you are not one member of this team')
+
+        project.preview_enabled = False
+        return ResponseTemplate(Error.SUCCESS, 'Preview disabled')
     except Project.DoesNotExist:
         return ResponseTemplate(Error.DATA_NOT_FOUND, 'project not found')
     except Exception as e:
