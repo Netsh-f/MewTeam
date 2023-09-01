@@ -5,7 +5,7 @@
 # @File    : urls.py
 #
 from django.urls import path
-from project.views import pro_manage, document, prototype, guest, doc_manage, doc_export
+from project.views import pro_manage, document, prototype, guest, doc_manage, doc_export, ptt_preview
 
 urlpatterns = {
     path('teams/<int:team_id>/create/', pro_manage.create_project, name='create_project'),
@@ -34,6 +34,7 @@ urlpatterns = {
 
     path('projects/<int:pro_id>/prototypes/', prototype.create_prototype),
     path('projects/<int:pro_id>/prototypes/list/', prototype.list_prototype),
+    path('projects/<int:pro_id>/prototypes/preview/', ptt_preview.generate_ptt_invitation_code),
     path('prototypes/<int:ptt_id>/save/', prototype.save_prototype),
     path('prototypes/<int:ptt_id>/update/', prototype.update_prototype),
     path('prototypes/<int:ptt_id>/delete/', prototype.delete_prototype),
