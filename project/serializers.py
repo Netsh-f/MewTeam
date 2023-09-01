@@ -47,7 +47,7 @@ class DocumentContentSimpleSerializer(serializers.ModelSerializer):
 class PrototypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Prototype
-        field = '__all__'
+        fields = '__all__'
 
 class PrototypeSimpleSerializer(serializers.ModelSerializer):
     class Meta:
