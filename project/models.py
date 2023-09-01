@@ -14,7 +14,7 @@ class Project(models.Model):
     delete_time = models.DateTimeField(null=True)
     cover = models.CharField(max_length=127)
     preview_enabled = models.BooleanField(default=True)
-    inv_code = models.CharField(max_length=15)
+    inv_code = models.CharField(max_length=15, null=True)
 
 class DocumentDir(models.Model):
     name = models.CharField(max_length=63)
