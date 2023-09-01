@@ -47,7 +47,7 @@ class DocumentContentSimpleSerializer(serializers.ModelSerializer):
 class PrototypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Prototype
-        fields = "__all__"
+        exclude = ['preview_enabled']
 
 class PrototypeSimpleSerializer(serializers.ModelSerializer):
     class Meta:

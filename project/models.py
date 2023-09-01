@@ -39,6 +39,7 @@ class Prototype(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     name = models.CharField(max_length=63)
     timestamp = models.DateTimeField(auto_now_add=True)
+    preview_enabled = models.BooleanField(default=True)
     # content = models.JSONField()
     # timestamp = models.DateTimeField(default=timezone.now)
 
