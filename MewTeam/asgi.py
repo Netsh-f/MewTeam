@@ -18,9 +18,7 @@ from channels.routing import ProtocolTypeRouter, URLRouter
 from django.core.asgi import get_asgi_application
 from channels.security.websocket import AllowedHostsOriginValidator
 
-from message.routing import websocket_urlpatterns
-
-
+from routing import websocket_urlpatterns
 
 application = ProtocolTypeRouter(
     {

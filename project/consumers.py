@@ -4,17 +4,16 @@
 # @Author  : Lynx
 # @File    : consumers.py
 #
-import json
 
 from channels.generic.websocket import WebsocketConsumer
 
-class ChatConsumer(WebsocketConsumer):
+class PttConsumer(WebsocketConsumer):
     def __init__(self, *args, **kwargs):
         # super().__init__(*args, **kwargs)
         # self.user_id = None
         # self.room_group_name = None
         # self.room_id = None
-        super()
+        super().__init__(*args, **kwargs)
 
     def connect(self):
         # try:

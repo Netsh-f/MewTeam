@@ -38,6 +38,7 @@ MEDIA_URL = 'media/'
 AVATAR_URL = os.path.join(MEDIA_URL, "avatar/")
 TEAM_AVATAR_URL = os.path.join(MEDIA_URL, "team_avatar/")
 MESSAGE_FILE_URL = os.path.join(MEDIA_URL, "message/")
+DOCUMENT_URL = os.path.join(MEDIA_URL, "document/")
 
 MEDIA_ROOT = os.path.join(BASE_DIR, "media/")
 AVATAR_ROOT = os.path.join(MEDIA_ROOT, "avatar/")

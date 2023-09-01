@@ -145,7 +145,7 @@ def destroy_all_project(request, team_id):
     except Exception as e:
         return ResponseTemplate(Error.FAILED, str(e))
 
-@api_view(['GET'])
+@api_view(['POST'])
 def search_project(request, team_id):
     try:
         print('------step here')

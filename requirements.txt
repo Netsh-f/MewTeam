@@ -33,3 +33,6 @@ twisted-iocpsupport==1.0.4
 txaio==23.1.1
 typing_extensions==4.7.1
 zope.interface==6.0
+
+yaml~=0.2.5
+pypandoc~=1.6.3

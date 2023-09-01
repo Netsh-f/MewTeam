@@ -5,7 +5,7 @@
 # @File    : urls.py
 #
 from django.urls import path
-from project.views import pro_manage, document, prototype, guest, doc_manage
+from project.views import pro_manage, document, prototype, guest, doc_manage, doc_export
 
 urlpatterns = {
     path('teams/<int:team_id>/create/', pro_manage.create_project, name='create_project'),
@@ -27,6 +27,10 @@ urlpatterns = {
     path('documents/<int:document_id>/latest/', document.get_latest_document),
     path('documents/<int:document_id>/history/', document.get_history_document_list),
     path('documents/contents/<int:document_content_id>/', document.get_document_content_by_id),
+    path('documents/<int:document_id>/delete/', document.delete_document),
+    path('documents/<int:document_id>/restore/', document.restore_document),
+    path('documents/<int:document_id>/destroy/', document.destroy_document),
+    path('documents/<int:document_id>/export/', doc_export.export_document),
 
     path('projects/<int:pro_id>/prototypes/', prototype.create_prototype),
     path('projects/<int:pro_id>/prototypes/list/', prototype.list_prototype),
@@ -37,8 +41,7 @@ urlpatterns = {
 
     path('documents/<int:document_id>/guests/tokens/', guest.generate_guest_token),
     path('guests/tokens/validate/', guest.validate_guest_token),
-    path('documents/<int:document_id>/delete/', document.delete_document),
-    path('documents/<int:document_id>/restore/', document.restore_document),
-    path('documents/<int:document_id>/destroy/', document.destroy_document),
+
+
 }
 

@@ -52,6 +52,7 @@ class Error:
     DOC_STRUCT_NOT_INIT = 60002
     DOC_DIR_NOT_EXISTS = 60003
     DOC_EXISTS = 60004
+    DOC_EXPORT_FAILED = 60005
 
     # prototype modules
     PTT_EXISTS = 70001
