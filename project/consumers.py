@@ -31,6 +31,7 @@ class PttConsumer(WebsocketConsumer):
 
     def connect(self):
         try:
+            logger.error('trying to connect ptt room')
             query_string = self.scope['query_string'].decode('utf-8')
             query_params = parse_qs(query_string)
             token = query_params.get('token', [''])[0]
@@ -40,8 +41,8 @@ class PttConsumer(WebsocketConsumer):
 
             self.user_id = get_identity_from_token(token)
             self.room_id = self.scope["url_route"]["kwargs"]["ptt_id"]
+            logger.error(self.room_id)
             self.room_name = f"ptt_{self.room_id}"
-
             async_to_sync(self.channel_layer.group_add)(
                 self.room_name, self.channel_name
             )
@@ -62,17 +63,6 @@ class PttConsumer(WebsocketConsumer):
             text_data_json = json.loads(text_data)
             logger.info(text_data_json)
 
-            # content = text_data_json.get("content", None)
-            # message = Message.objects.create(content=content, sender_user_id=self.user_id, room_id=self.room_id)
-            # mention_user_id_list = text_data_json.get('mention_user_id_list', None)
-            #
-            # if mention_user_id_list is not None:
-            #     for user_id in mention_user_id_list:
-            #         Mention.objects.create(sender_user_id=self.user_id, receiver_user_id=user_id, message=message)
-            # async_to_sync(self.channel_layer.group_send)(
-            #     self.room_name, {"type": "chat.message", "data": MessageSerializer(message).data}
-            # )
-            # user_num = get_channel_group_size(self.room_name)
             data = {
                 'id': self.user_id,
                 'cursor_x': text_data_json.get('cursor_x', None),

@@ -13,7 +13,7 @@ class Project(models.Model):
     create_time = models.DateTimeField(default=timezone.now)
     delete_time = models.DateTimeField(null=True)
     cover = models.CharField(max_length=127)
-    preview_enabled = models.BooleanField(default=True)
+    preview_enabled = models.BooleanField(default=False)
     inv_code = models.CharField(max_length=15, null=True)
 
 class DocumentDir(models.Model):

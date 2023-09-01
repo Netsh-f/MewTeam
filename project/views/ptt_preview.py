@@ -38,7 +38,7 @@ def verify_ptt_invitation_code(request, pro_id):
     try:
         project = Project.objects.get(id=pro_id)
         inv_code = request.GET.get('inv_code')
-        if (not project.preview_enabled) or project.inv_code != inv_code:
+        if project.preview_enabled or project.inv_code != inv_code:
             return ResponseTemplate(Error.PERMISSION_DENIED, 'Permission denied!')
         else:
             return ResponseTemplate(Error.SUCCESS, 'Preview success!')
@@ -58,6 +58,7 @@ def disable_ptt_preview(request, pro_id):
             return ResponseTemplate(Error.PERMISSION_DENIED, 'you are not one member of this team')
 
         project.preview_enabled = False
+        project.save()
         return ResponseTemplate(Error.SUCCESS, 'Preview disabled')
     except Project.DoesNotExist:
         return ResponseTemplate(Error.DATA_NOT_FOUND, 'project not found')
@@ -73,7 +74,6 @@ def get_ptt_preview_status(request, pro_id):
         project = Project.objects.get(id=pro_id)
         if not is_team_member(user_id, project.team_id):
             return ResponseTemplate(Error.PERMISSION_DENIED, 'you are not one member of this team')
-
         return ResponseTemplate(Error.SUCCESS, 'Preview status get success', data=project.preview_enabled)
     except Project.DoesNotExist:
         return ResponseTemplate(Error.DATA_NOT_FOUND, 'project not found')
