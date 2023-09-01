@@ -114,10 +114,10 @@ def get_chat_history(request, room_id):
             return response
         earliest_message_id = request.query_params.get('earliest_message_id', None)
         if earliest_message_id:
-            messages = Message.objects.filter(room_id=room_id, id__lt=earliest_message_id).order_by('-timestamp')[:50][
+            messages = Message.objects.filter(room_id=room_id, id__lt=earliest_message_id).order_by('-timestamp')[
                        ::-1]
         else:
-            messages = Message.objects.filter(room_id=room_id).order_by('-timestamp')[:50][::-1]
+            messages = Message.objects.filter(room_id=room_id).order_by('-timestamp')[::-1]
         messages_info = []
         for message in messages:
             message_info = MessageSerializer(message).data
