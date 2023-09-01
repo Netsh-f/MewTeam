@@ -36,7 +36,8 @@ urlpatterns = {
     path('projects/<int:pro_id>/prototypes/list/', prototype.list_prototype),
     path('projects/<int:pro_id>/prototypes/preview/', ptt_preview.generate_ptt_invitation_code),
     path('projects/<int:pro_id>/prototypes/vertify/', ptt_preview.verify_ptt_invitation_code),
-    path('projects/<int:pro_id>/prototypes/diable/', ptt_preview.disable_ptt_preview),
+    path('projects/<int:pro_id>/prototypes/disable/', ptt_preview.disable_ptt_preview),
+    path('projects/<int:pro_id>/prototypes/status/', ptt_preview.get_ptt_preview_status),
 
     path('prototypes/<int:ptt_id>/save/', prototype.save_prototype),
     path('prototypes/<int:ptt_id>/update/', prototype.update_prototype),
