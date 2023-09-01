@@ -5,7 +5,8 @@ from urllib.parse import parse_qs
 from channels.generic.websocket import WebsocketConsumer
 from asgiref.sync import async_to_sync
 
-from message.models import Message, Mention
+from MewTeam import settings
+from message.models import Message, Mention, MessageFile
 from message.serializers import MessageSerializer
 from shared.regex_helper import extract_user_ids
 from shared.token import verify_token, get_identity_from_token
@@ -55,16 +56,27 @@ class ChatConsumer(WebsocketConsumer):
             content = text_data.get("content", None)
             room_id = text_data.get("roomId", None)
             mid = text_data.get("mid", None)
+            files = text_data.get("files", None)
+            logger.error(files)
             message = Message.objects.create(content=content, sender_user_id=self.user_id, room_id=room_id, mid=mid)
-
+            if files is not None:
+                for file in files:
+                    mid = file.get("mid", None)
+                    name = file.get("name", None)
+                    size = file.get("size", None)
+                    file_type = file.get("type", None)
+                    extension = file.get("extension", None)
+                    MessageFile.objects.create(name=name, size=size, type=file_type, mid=mid, extension=extension,
+                                               url=f"{settings.MESSAGE_FILE_URL}{mid}/{file.name}", message=message)
             mention_user_id_list = extract_user_ids(content)
             logger.error(mention_user_id_list)
 
             if mention_user_id_list is not None:
                 for user_id in mention_user_id_list:
                     Mention.objects.create(sender_user_id=self.user_id, receiver_user_id=user_id, message=message)
+            data = MessageSerializer(message).data
             async_to_sync(self.channel_layer.group_send)(
-                self.room_group_name, {"type": "chat.message", "data": MessageSerializer(message).data}
+                self.room_group_name, {"type": "chat.message", "data": data}
             )
         except Exception as e:
             logger.error(str(e))
