@@ -171,7 +171,7 @@ def get_chat_history(request, room_id):
         messages_info = []
         for message in messages:
             message_info = MessageSerializer(message).data
-            message_files = MessageFile.objects.filter(min=message.mid).all()
+            message_files = MessageFile.objects.filter(mid=message.mid).all()
             message_info['files'] = MessageFileSerializer(message_files, many=True).data
             messages_info.append(message_info)
         return ResponseTemplate(Error.SUCCESS, 'success', data=messages_info)
