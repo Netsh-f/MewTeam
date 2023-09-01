@@ -145,5 +145,4 @@ create_mig.py
 .idea/
 secrets.yaml
 secrets_debug.yaml
-**/migrations
 media/

@@ -13,6 +13,8 @@ class Project(models.Model):
     create_time = models.DateTimeField(default=timezone.now)
     delete_time = models.DateTimeField(null=True)
     cover = models.CharField(max_length=127)
+    preview_enabled = models.BooleanField(default=True)
+    inv_code = models.CharField(max_length=15)
 
 class DocumentDir(models.Model):
     name = models.CharField(max_length=63)
@@ -39,7 +41,6 @@ class Prototype(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     name = models.CharField(max_length=63)
     timestamp = models.DateTimeField(auto_now_add=True)
-    preview_enabled = models.BooleanField(default=True)
     # content = models.JSONField()
     # timestamp = models.DateTimeField(default=timezone.now)
 
