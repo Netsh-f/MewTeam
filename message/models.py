@@ -45,7 +45,6 @@ class MessageFile(models.Model):
     # audio = models.BooleanField(default=False)
     # duration = models.DecimalField(default=0)
     url = models.CharField(max_length=127)
-    message = models.ForeignKey(Message, on_delete=models.CASCADE)
     mid = models.UUIDField()
 
 
