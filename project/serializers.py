@@ -6,7 +6,7 @@ from project.models import Project, Prototype, Document, DocumentContent, Docume
 class ProjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = Project
-        fields = '__all__'
+        exclude = ['preview_enabled', 'inv_code']
 
 class CustomParDirField(serializers.StringRelatedField):
     def to_representation(self, value):
@@ -47,7 +47,7 @@ class DocumentContentSimpleSerializer(serializers.ModelSerializer):
 class PrototypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Prototype
-        exclude = ['preview_enabled']
+        fields = '__all__'
 
 class PrototypeSimpleSerializer(serializers.ModelSerializer):
     class Meta:
