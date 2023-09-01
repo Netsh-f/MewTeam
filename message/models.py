@@ -41,11 +41,13 @@ class Message(models.Model):
 class MessageFile(models.Model):
     name = models.CharField(max_length=127)
     size = models.IntegerField()  # Byte
-    type = models.CharField(max_length=15)  # example: "png"
+    type = models.CharField(max_length=15)  # example: "image/png"
+    extension = models.CharField(max_length=15)  # "png"
     # audio = models.BooleanField(default=False)
     # duration = models.DecimalField(default=0)
     url = models.CharField(max_length=127)
     mid = models.UUIDField()
+    message = models.ForeignKey(Message, on_delete=models.CASCADE)
 
 
 class Mention(models.Model):

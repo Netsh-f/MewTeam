@@ -33,9 +33,6 @@ def upload_message_file(request):
             return response
         mid = request.POST.get("mid", None)
         file = request.FILES.get('file', None)
-        name = request.POST.get("name", None)
-        size = request.POST.get("size", None)
-        type = request.POST.get("type", None)
         print(file)
         if file is None:
             return ResponseTemplate(Error.FILE_MISSING, 'Missing file')
@@ -46,8 +43,6 @@ def upload_message_file(request):
         with open(filepath, "wb+") as f:
             for chunk in file.chunks():
                 f.write(chunk)
-        MessageFile.objects.create(name=name, size=size, type=type, mid=mid,
-                                   url=f"{settings.MESSAGE_FILE_URL}{mid}/{file.name}")
         return ResponseTemplate(Error.SUCCESS, 'upload file successfully')
     except Exception as e:
         return ResponseTemplate(Error.FAILED, str(e))
@@ -171,8 +166,7 @@ def get_chat_history(request, room_id):
         messages_info = []
         for message in messages:
             message_info = MessageSerializer(message).data
-            message_files = MessageFile.objects.filter(mid=message.mid).all()
-            message_info['files'] = MessageFileSerializer(message_files, many=True).data
+            message_info['files'] = MessageFileSerializer(message.messagefile_set.all(), many=True).data
             messages_info.append(message_info)
         return ResponseTemplate(Error.SUCCESS, 'success', data=messages_info)
     except Exception as e:
