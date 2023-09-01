@@ -55,19 +55,23 @@ class ChatConsumer(WebsocketConsumer):
 
             content = text_data.get("content", None)
             room_id = text_data.get("roomId", None)
-            mid = text_data.get("mid", None)
+            mid = text_data['mid']
             files = text_data.get("files", None)
+            if files is None:
+                files = []
+            logger.error("files: ")
             logger.error(files)
             message = Message.objects.create(content=content, sender_user_id=self.user_id, room_id=room_id, mid=mid)
             if files is not None:
-                for file in files:
-                    mid = file.get("mid", None)
+                for index, file in enumerate(files):
                     name = file.get("name", None)
                     size = file.get("size", None)
                     file_type = file.get("type", None)
                     extension = file.get("extension", None)
+                    url = f"{settings.MESSAGE_FILE_URL}{mid}/{name}.{extension}"
+                    files[index]['url'] = url
                     MessageFile.objects.create(name=name, size=size, type=file_type, mid=mid, extension=extension,
-                                               url=f"{settings.MESSAGE_FILE_URL}{mid}/{file.name}", message=message)
+                                               url=url, message=message)
             mention_user_id_list = extract_user_ids(content)
             logger.error(mention_user_id_list)
 
@@ -75,6 +79,7 @@ class ChatConsumer(WebsocketConsumer):
                 for user_id in mention_user_id_list:
                     Mention.objects.create(sender_user_id=self.user_id, receiver_user_id=user_id, message=message)
             data = MessageSerializer(message).data
+            data['files'] = files
             async_to_sync(self.channel_layer.group_send)(
                 self.room_group_name, {"type": "chat.message", "data": data}
             )
