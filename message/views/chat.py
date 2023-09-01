@@ -217,3 +217,28 @@ def get_create_private_group_user_list(request, team_id):
         return ResponseTemplate(Error.SUCCESS, 'success', data=users_info)
     except Exception as e:
         return ResponseTemplate(Error.FAILED, str(e))
+
+
+@api_view(['POST'])
+def forward_message(request, room_id):
+    try:
+        response, current_user_id = check_token(request)
+        if current_user_id == -1:
+            return response
+        messages = request.data['messages']
+        for message in messages:
+            origin_message = Message.objects.get(id=message['_id'])
+            new_message = Message.objects.create(content=message['content'], sender_user=current_user_id,
+                                                 room_id=room_id,
+                                                 mid=origin_message.mid)
+            files = message['files']
+            for file in files:
+                url = file['url']
+                parts = url.split("/")
+                index = parts.index("media") + 1
+                MessageFile.objects.create(name=file['name'], size=file['size'], type=file['type'],
+                                           extension=file['extension'], url="/".join(parts[index:index + 3]),
+                                           mid=file['mid'], message=new_message)
+        return ResponseTemplate(Error.SUCCESS, 'forward message success')
+    except Exception as e:
+        return ResponseTemplate(Error.FAILED, str(e))

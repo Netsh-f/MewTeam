@@ -29,4 +29,5 @@ urlpatterns = [
     path('teams/<int:team_id>/users/list/', chat.get_create_group_user_list),
     path('teams/<int:team_id>/users/list/private/', chat.get_create_private_group_user_list),
     path('rooms/<int:room_id>/messages/search/', chat.search_history_message),
+    path('rooms/<int:room_id>/messages/forward/', chat.forward_message),
 ]
