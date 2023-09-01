@@ -11,7 +11,7 @@ import os
 from rest_framework.decorators import api_view
 
 from MewTeam import settings
-from message.models import Room, UserRoomShip, Message
+from message.models import Room, UserRoomShip, Message, MessageFile
 from message.serializers import RoomSerializer, MessageSerializer, MessageFileSerializer
 from shared.chat_center import create_room
 from shared.error import Error
@@ -32,18 +32,23 @@ def upload_message_file(request):
         response, user_id = check_token(request)
         if user_id == -1:
             return response
-        mid = request.POST.get("mid")
-        file = request.FILES.get('file')
+        mid = request.POST.get("mid", None)
+        file = request.FILES.get('file', None)
+        name = request.POST.get("name", None)
+        size = request.POST.get("size", None)
+        type = request.POST.get("type", None)
         print(file)
         if file is None:
             return ResponseTemplate(Error.FILE_MISSING, 'Missing file')
         if file.size > settings.MAX_MESSAGE_FILE_SIZE:
             return ResponseTemplate(Error.FILE_SIZE_ILLEGAL, 'Size of file is too large. It should be less than 64mb.')
-        filepath = f"{settings.MESSAGE_ROOT}/{mid}/{file.name}"
+        filepath = f"{settings.MESSAGE_ROOT}{mid}/{file.name}"
         os.makedirs(os.path.dirname(filepath), exist_ok=True)
         with open(filepath, "wb+") as f:
             for chunk in file.chunks():
                 f.write(chunk)
+        MessageFile.objects.create(name=name, size=size, type=type, mid=mid,
+                                   url=f"{settings.MESSAGE_FILE_URL}{mid}/{file.name}")
         return ResponseTemplate(Error.SUCCESS, 'upload file successfully')
     except Exception as e:
         return ResponseTemplate(Error.FAILED, str(e))

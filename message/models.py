@@ -35,6 +35,7 @@ class Message(models.Model):
     sender_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sent_messages')
     timestamp = models.DateTimeField(default=timezone.now)
     room = models.ForeignKey(Room, on_delete=models.CASCADE, null=True)
+    mid = models.UUIDField()
 
 
 class MessageFile(models.Model):
@@ -45,6 +46,7 @@ class MessageFile(models.Model):
     # duration = models.DecimalField(default=0)
     url = models.CharField(max_length=127)
     message = models.ForeignKey(Message, on_delete=models.CASCADE)
+    mid = models.UUIDField()
 
 
 class Mention(models.Model):

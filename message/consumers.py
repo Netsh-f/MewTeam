@@ -54,9 +54,11 @@ class ChatConsumer(WebsocketConsumer):
 
             content = text_data.get("content", None)
             room_id = text_data.get("roomId", None)
-            message = Message.objects.create(content=content, sender_user_id=self.user_id, room_id=room_id)
+            mid = text_data.get("mid", None)
+            message = Message.objects.create(content=content, sender_user_id=self.user_id, room_id=room_id, mid=mid)
 
             mention_user_id_list = extract_user_ids(content)
+            logger.error(mention_user_id_list)
 
             if mention_user_id_list is not None:
                 for user_id in mention_user_id_list:
