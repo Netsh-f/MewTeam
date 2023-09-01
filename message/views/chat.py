@@ -228,16 +228,16 @@ def forward_message(request, room_id):
         messages = request.data['messages']
         for message in messages:
             origin_message = Message.objects.get(id=message['_id'])
-            new_message = Message.objects.create(content=message['content'], sender_user=current_user_id,
+            new_message = Message.objects.create(content=message['content'], sender_user_id=current_user_id,
                                                  room_id=room_id,
                                                  mid=origin_message.mid)
             files = message['files']
             for file in files:
                 url = file['url']
                 parts = url.split("/")
-                index = parts.index("media") + 1
+                index = parts.index("media")
                 MessageFile.objects.create(name=file['name'], size=file['size'], type=file['type'],
-                                           extension=file['extension'], url="/".join(parts[index:index + 3]),
+                                           extension=file['extension'], url="/".join(parts[index:index + 4]),
                                            mid=file['mid'], message=new_message)
         return ResponseTemplate(Error.SUCCESS, 'forward message success')
     except Exception as e:
