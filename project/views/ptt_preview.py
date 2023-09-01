@@ -7,6 +7,7 @@
 from rest_framework.decorators import api_view
 
 from project.models import Project
+from project.serializers import ProjectSerializer
 from shared.error import Error
 from shared.permission import is_team_member
 from shared.random import generate_invitation_code
@@ -38,7 +39,7 @@ def verify_ptt_invitation_code(request, pro_id):
     try:
         project = Project.objects.get(id=pro_id)
         inv_code = request.GET.get('inv_code')
-        if project.preview_enabled or project.inv_code != inv_code:
+        if (not project.preview_enabled) or project.inv_code != inv_code:
             return ResponseTemplate(Error.PERMISSION_DENIED, 'Permission denied!')
         else:
             return ResponseTemplate(Error.SUCCESS, 'Preview success!')
