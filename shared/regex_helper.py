@@ -9,7 +9,7 @@ import re
 
 
 def extract_user_ids(chat_content):
-    pattern = r'<usertag>(\d+)<usertag>'
+    pattern = r'<usertag>(\d+)<\/usertag>'
     matches = re.findall(pattern, chat_content)
     user_ids = [int(match) for match in matches]
     return user_ids
