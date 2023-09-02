@@ -61,7 +61,7 @@ class Mention(models.Model):
     @property
     def text(self):
         if self.type == self.MentionType.MESSAGE:
-            return self.message.content if self.message else ""
+            return self.message.refactor_content if self.message else ""
         elif self.type == self.MentionType.DOCUMENT:
             return self.document.name if self.document else ""
         return ""

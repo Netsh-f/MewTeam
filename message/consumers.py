@@ -6,7 +6,7 @@ from channels.generic.websocket import WebsocketConsumer
 from asgiref.sync import async_to_sync
 
 from MewTeam import settings
-from message.models import Message, Mention, MessageFile
+from message.models import Message, Mention, MessageFile, Room
 from message.serializers import MessageSerializer
 from shared.regex_helper import extract_user_ids
 from shared.token import verify_token, get_identity_from_token
@@ -61,7 +61,17 @@ class ChatConsumer(WebsocketConsumer):
                 files = []
             logger.error("files: ")
             logger.error(files)
-            message = Message.objects.create(content=content, sender_user_id=self.user_id, room_id=room_id, mid=mid)
+            mention_user_id_list, refactor_content = extract_user_ids(content)
+            message = Message.objects.create(content=content, sender_user_id=self.user_id, room_id=room_id, mid=mid,
+                                             refactor_content=refactor_content)
+            if content == "@所有人":
+                mention_user_id_list = []
+                ships = Room.objects.filter(id=room_id).first().userroomship_set.exclude(id=self.user_id).all()
+                for ship in ships:
+                    mention_user_id_list.append(ship.user_id)
+            logger.error("mentions regex: ")
+            logger.error(mention_user_id_list)
+            logger.error(refactor_content)
             if files is not None:
                 for index, file in enumerate(files):
                     name = file.get("name", None)
@@ -72,11 +82,6 @@ class ChatConsumer(WebsocketConsumer):
                     files[index]['url'] = url
                     MessageFile.objects.create(name=name, size=size, type=file_type, mid=mid, extension=extension,
                                                url=url, message=message)
-            mention_user_id_list, refactor_content = extract_user_ids(content)
-            logger.error("mentions regex: ")
-            logger.error(mention_user_id_list)
-            logger.error(refactor_content)
-
             if mention_user_id_list is not None:
                 for user_id in mention_user_id_list:
                     Mention.objects.create(sender_user_id=self.user_id, receiver_user_id=user_id, message=message)

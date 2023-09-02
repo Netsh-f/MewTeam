@@ -13,8 +13,25 @@ class MessageSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class RoomSerializer(serializers.ModelSerializer):
+    roomId = serializers.IntegerField(source='id')
+
+    class Meta:
+        model = Room
+        fields = '__all__'
+
+
+class MessageSerializerWithRoom(serializers.ModelSerializer):
+    sender_user = UserSerializer()
+    room = RoomSerializer()
+
+    class Meta:
+        model = Message
+        fields = '__all__'
+
+
 class MentionSerializer(serializers.ModelSerializer):
-    message = MessageSerializer()
+    message = MessageSerializerWithRoom()
     sender_user = UserSerializer()
     text = serializers.SerializerMethodField()
 
@@ -24,14 +41,6 @@ class MentionSerializer(serializers.ModelSerializer):
 
     def get_text(self, obj):
         return obj.text
-
-
-class RoomSerializer(serializers.ModelSerializer):
-    roomId = serializers.IntegerField(source='id')
-
-    class Meta:
-        model = Room
-        fields = '__all__'
 
 
 class MessageFileSerializer(serializers.ModelSerializer):
