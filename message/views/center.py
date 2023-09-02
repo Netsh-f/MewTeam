@@ -16,9 +16,9 @@ def get_mentions(request):
         response, user_id = check_token(request)
         if user_id == -1:
             return response
-        at_messages = Mention.objects.filter(receiver_user_id=user_id, receiver_deleted=False)
+        mentions = Mention.objects.filter(receiver_user_id=user_id, receiver_deleted=False)
         return ResponseTemplate(Error.SUCCESS, 'get mentions successfully',
-                                data=MentionSerializer(at_messages, many=True).data)
+                                data=MentionSerializer(mentions, many=True).data)
     except Exception as e:
         return ResponseTemplate(Error.FAILED, str(e))
 

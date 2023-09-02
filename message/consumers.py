@@ -72,8 +72,10 @@ class ChatConsumer(WebsocketConsumer):
                     files[index]['url'] = url
                     MessageFile.objects.create(name=name, size=size, type=file_type, mid=mid, extension=extension,
                                                url=url, message=message)
-            mention_user_id_list = extract_user_ids(content)
+            mention_user_id_list, refactor_content = extract_user_ids(content)
+            logger.error("mentions regex: ")
             logger.error(mention_user_id_list)
+            logger.error(refactor_content)
 
             if mention_user_id_list is not None:
                 for user_id in mention_user_id_list:

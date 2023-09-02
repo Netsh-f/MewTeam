@@ -32,6 +32,7 @@ class UserRoomShip(models.Model):
 
 class Message(models.Model):
     content = models.TextField(null=True)
+    refactor_content = models.TextField(null=True)
     sender_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sent_messages')
     timestamp = models.DateTimeField(default=timezone.now)
     room = models.ForeignKey(Room, on_delete=models.CASCADE, null=True)
