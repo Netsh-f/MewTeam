@@ -5,6 +5,7 @@
 # @FileName: document.py
 ===========================
 """
+import logging
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
@@ -59,6 +60,10 @@ def save_document(request, document_id):
         content = request.data['content']
         at_user_list = request.data['at_user_list']
         auto_save = request.data['auto_save']
+
+        logger = logging.getLogger("__name__")
+        logger.error("--at_user_list--")
+        logger.error(at_user_list)
 
         mentions = document.mention_set.all()
         mentioned_list = mentions.values_list('receiver_user_id', flat=True)

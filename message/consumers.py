@@ -50,7 +50,7 @@ class ChatConsumer(WebsocketConsumer):
 
     def receive(self, text_data=None, bytes_data=None):
         try:
-            logger.error("---???text_data=" + text_data)
+            # logger.error("---???text_data=" + text_data)
             text_data = json.loads(text_data)
 
             content = text_data.get("content", None)
@@ -95,7 +95,7 @@ class ChatConsumer(WebsocketConsumer):
 
     def chat_message(self, event):
         # message = event["message"]
-        logger.error('in chat_message, event: ' + str(event))
+        # logger.error('in chat_message, event: ' + str(event))
 
         # Send message to WebSocket
         self.send(text_data=json.dumps({"message": event}))
