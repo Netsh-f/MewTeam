@@ -28,7 +28,9 @@ def create_team(request):
             new_team = Team.objects.create(name=name)
             UserTeamShip.objects.create(user_id=user_id, team=new_team, identify=UserTeamShip.Identify.CREATOR)
 
-            create_room(user_id=user_id, name=name, room_type=Room.RoomType.TEAM, team=new_team)
+            room = create_room(user_id=user_id, name=name, room_type=Room.RoomType.TEAM, team=new_team)
+            room.avatar = new_team.avatar
+            room.save()
 
             return ResponseTemplate(Error.SUCCESS, 'Team created successfully!', data={'team_id': new_team.id})
     except Exception as e:
