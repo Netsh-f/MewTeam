@@ -14,7 +14,7 @@ class Room(models.Model):
 
     roomName = models.CharField(max_length=63)
     type = models.PositiveSmallIntegerField(choices=RoomType.choices, default=RoomType.TEAM)
-    avatar = models.CharField(max_length=127, default='assets/images/people.png')
+    avatar = models.CharField(max_length=127, default='media/room_avatar/default.png')
 
     team = models.ForeignKey(Team, on_delete=models.CASCADE, null=True)
 
