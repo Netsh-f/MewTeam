@@ -75,7 +75,7 @@ def create_private_room(request, team_id):
         user1 = User.objects.get(id=current_user_id)
         user2 = User.objects.get(id=user_id)
         room = Room.objects.create(roomName=f"{user1.name}和{user2.name}的会话", type=Room.RoomType.PRIVATE,
-                                   team_id=team_id)
+                                   team_id=team_id, avatar=user2.avatar)
         UserRoomShip.objects.create(room=room, user=user1, identify=UserRoomShip.Identify.NORMAL)
         UserRoomShip.objects.create(room=room, user=user2, identify=UserRoomShip.Identify.NORMAL)
         return ResponseTemplate(Error.SUCCESS, 'success create private room')
