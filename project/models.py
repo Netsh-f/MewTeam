@@ -35,7 +35,7 @@ class DocumentContent(models.Model):
     document = models.ForeignKey(Document, on_delete=models.CASCADE)
     content = models.TextField()
     timestamp = models.DateTimeField(default=timezone.now)
-
+    auto_save = models.BooleanField(default=True)
 
 class Prototype(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
