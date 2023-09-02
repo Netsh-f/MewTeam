@@ -57,3 +57,4 @@ class Error:
     # prototype modules
     PTT_EXISTS = 70001
     PTT_NOT_EXISTS = 70002
+    INV_INVALID = 70003

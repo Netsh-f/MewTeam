@@ -46,6 +46,8 @@ urlpatterns = {
 
     path('documents/<int:document_id>/guests/tokens/', guest.generate_guest_token),
     path('guests/tokens/validate/', guest.validate_guest_token),
+    path('guests/prototypes/preview/', ptt_preview.guest_list_prototype),
+    path('guests/prototypes/<ptt_id>/latest/', ptt_preview.guest_get_latest_prototype)
 
 }
 
