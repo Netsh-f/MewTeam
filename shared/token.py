@@ -99,7 +99,6 @@ def verify_token(token) -> bool:
             return False
         exp = get_expire_from_token(token)
     except Exception as e:
-        print(e)
         return False
     if exp is None:
         return False

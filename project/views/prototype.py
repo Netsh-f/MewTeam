@@ -25,11 +25,9 @@ def create_prototype(request, pro_id):
         if not is_team_member(user_id, project.team_id):
             return ResponseTemplate(Error.PERMISSION_DENIED, 'you are not one member of this team')
         name = request.data['name']
-        print('-----step here-----')
         if Prototype.objects.filter(project_id=pro_id, name=name).exists():
             return ResponseTemplate(Error.PTT_EXISTS, 'Prototype already exists')
         ptt = Prototype.objects.create(project_id=pro_id, name=name)
-        print('-----step here-----')
         PrototypeContent.objects.create(prototype=ptt)
         return ResponseTemplate(Error.SUCCESS, 'create prototype successfully',
                                 data=PrototypeSerializer(ptt).data)

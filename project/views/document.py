@@ -154,7 +154,6 @@ def get_documents_by_project_id(request, pro_id):
         if user_id == -1:
             return response
         project = Project.objects.get(id=pro_id)
-        print('enter here')
         documents = project.document_set.all()
         return ResponseTemplate(Error.SUCCESS, DocumentDirSerializer(documents, many=True).data)
     except ObjectDoesNotExist as e:

@@ -33,7 +33,6 @@ def upload_message_file(request):
             return response
         mid = request.POST.get("mid", None)
         file = request.FILES.get('file', None)
-        print(file)
         if file is None:
             return ResponseTemplate(Error.FILE_MISSING, 'Missing file')
         if file.size > settings.MAX_MESSAGE_FILE_SIZE:

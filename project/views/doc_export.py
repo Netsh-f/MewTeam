@@ -20,7 +20,6 @@ from shared.token import check_token
 @api_view(['GET'])
 def export_document(request, document_id):
     try:
-        print('-------step here-------')
         response, user_id = check_token(request)
         if user_id == -1:
             return response
@@ -29,7 +28,6 @@ def export_document(request, document_id):
             return ResponseTemplate(Error.PERMISSION_DENIED, 'You are not one member of this team')
         doc_cont = DocumentContent.objects.filter(document=document).order_by('-timestamp').first()
         doc_path = os.path.join(DOCUMENT_URL, f"{document.id}.docx")
-        print('-------step here-------')
         os.makedirs(os.path.dirname(doc_path), exist_ok=True)
         error:str = pypandoc.convert_text(doc_cont.content, 'docx', 'html', outputfile=doc_path)
         if error != '':

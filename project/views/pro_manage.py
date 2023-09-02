@@ -148,7 +148,6 @@ def destroy_all_project(request, team_id):
 @api_view(['POST'])
 def search_project(request, team_id):
     try:
-        print('------step here')
         response, user_id = check_token(request)
         if user_id == -1:
             return response
@@ -169,7 +168,6 @@ def search_project(request, team_id):
 @api_view(['POST'])
 def copy_project(request, pro_id):
     try:
-        print('-------step here-------')
         response, user_id = check_token(request)
         if user_id == -1:
             return response
