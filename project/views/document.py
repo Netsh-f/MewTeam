@@ -58,6 +58,7 @@ def save_document(request, document_id):
             return ResponseTemplate(Error.PERMISSION_DENIED, 'you are not one member of this team')
         content = request.data['content']
         at_user_list = request.data['at_user_list']
+        auto_save = request.data['auto_save']
 
         mentions = document.mention_set.all()
         mentioned_list = mentions.values_list('receiver_user_id', flat=True)
@@ -70,7 +71,7 @@ def save_document(request, document_id):
             if mention.receiver_user_id not in at_user_list:
                 mention.delete()
 
-        DocumentContent.objects.create(document=document, content=content)
+        DocumentContent.objects.create(document=document, content=content, auto_save=auto_save)
         document.modified_at = timezone.now()
         document.save()
         return ResponseTemplate(Error.SUCCESS, 'save document successfully')
@@ -114,7 +115,7 @@ def get_history_document_list(request, document_id):
         document = Document.objects.get(id=document_id)
         if not is_team_member(user_id, document.project.team_id):
             return ResponseTemplate(Error.PERMISSION_DENIED, 'you are not one member of this team')
-        document_contents = document.documentcontent_set.all().order_by('-timestamp').all()
+        document_contents = document.documentcontent_set.filter(auto_save=False).order_by('-timestamp').all()
         return ResponseTemplate(Error.SUCCESS, 'get history documents list successfully',
                                 data=DocumentContentSimpleSerializer(document_contents, many=True).data)
     except KeyError as keyError:
