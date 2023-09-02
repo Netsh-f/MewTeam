@@ -66,13 +66,6 @@ def get_documents(request, pro_id):
         _init_doc_struction(project)
         documents = Document.objects.filter(project=project)
 
-        # root_dir = DocumentDir.objects.get(name=f'root_{pro_id}')
-        # sub_dirs = DocumentDir.objects.filter(par_dir=root_dir)
-        # data = DocumentSerializer(documents, many=True).data + \
-        #        DocumentDirSerializer(sub_dirs, many=True).data
-        # print(data)
-        # return ResponseTemplate(Error.SUCCESS, 'Query Successful', data=data)
-
         root_dir = DocumentDir.objects.get(name=f'root_{project.id}')
         sub_dirs = DocumentDir.objects.filter(par_dir=root_dir)
         sub_data = []

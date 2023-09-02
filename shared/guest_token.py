@@ -66,15 +66,3 @@ def check_guest_token(request):
     except Exception as e:
         return None, ResponseTemplate(Error.TOKEN_INVALID, f'guest token is invalid {str(e)}')
 
-# expiration_days = 7
-# document_id = 123
-# edit_permission = True
-#
-# token = generate_encrypted_token(document_id, edit_permission, expiration_days)
-# print("Generated Token:", token)
-#
-# parsed_data = validate_and_parse_token(token)
-# if parsed_data:
-#     print("Valid Token:", parsed_data)
-# else:
-#     print("Invalid Token")
