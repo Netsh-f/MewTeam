@@ -21,6 +21,7 @@ from shared.permission import is_team_member
 from shared.res_temp import ResponseTemplate
 from shared.token import check_token
 
+logger = logging.getLogger("__name__")
 
 @api_view(['POST'])
 def create_document(request, pro_id):
@@ -61,15 +62,11 @@ def save_document(request, document_id):
         at_user_list = request.data['at_user_list']
         auto_save = request.data['auto_save']
 
-        logger = logging.getLogger("__name__")
-        logger.error("--at_user_list--")
-        logger.error(at_user_list)
-
         mentions = document.mention_set.all()
         mentioned_list = mentions.values_list('receiver_user_id', flat=True)
         for at_user_id in at_user_list:
             if at_user_id not in mentioned_list:
-                Mention.objects.create(sender_user_id=current_user_id, receiver_user_id=current_user_id,
+                Mention.objects.create(sender_user_id=current_user_id, receiver_user_id=at_user_id,
                                        document=document,
                                        type=Mention.MentionType.DOCUMENT)
         for mention in mentions:
