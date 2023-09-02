@@ -13,6 +13,7 @@ from channels.generic.websocket import WebsocketConsumer
 from channels.layers import get_channel_layer
 
 from shared.token import verify_token, get_identity_from_token
+from user.models import User
 
 logger = logging.getLogger(__name__)
 
@@ -59,9 +60,9 @@ class PttConsumer(WebsocketConsumer):
         try:
             text_data_json = json.loads(text_data)
             logger.info(text_data_json)
-
+            user = User.objects.get(id=self.user_id)
             data = {
-                "id": self.user_id,
+                "name": user.name,
                 "cursor_x": text_data_json.get("cursor_x", None),
                 "cursor_y": text_data_json.get("cursor_y", None)
             }
