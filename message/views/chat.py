@@ -16,7 +16,6 @@ from message.models import Room, UserRoomShip, Message, MessageFile
 from message.serializers import RoomSerializer, MessageSerializer, MessageFileSerializer
 from shared.chat_center import create_room
 from shared.error import Error
-from shared.random import generate_session_id
 from shared.res_temp import ResponseTemplate
 from shared.token import check_token
 from team.models import Team
